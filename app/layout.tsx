@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 
@@ -9,12 +8,15 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en" className={GeistSans.variable}>
+      <body suppressHydrationWarning={true}>
+        <main>{children}</main>
+      </body>
     </html>
   );
 }
