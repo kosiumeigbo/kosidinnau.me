@@ -46,7 +46,7 @@ export const getInfoObjForFileInWritings = async function (slug: string) {
   const htmlContent = lines.join("");
   console.log(frontMatterArray, slug, htmlContent);
 
-  return { title: "", date: Date.now().toString(), htmlContent, slug };
+  return { title: "Writing Post", date: Date.now().toString(), htmlContent, slug };
 };
 
 export const getInfoObjArrayForAllFilesInWritings = async function () {
