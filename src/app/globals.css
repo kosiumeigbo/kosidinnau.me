@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    @apply font-menlo;
+  }
   @font-face {
     font-family: "Menlo";
     src: url("../../public/assets/fonts/Menlo-Bold-Italic.ttf") format("opentype");
