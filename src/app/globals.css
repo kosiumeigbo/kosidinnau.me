@@ -3,7 +3,35 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-amber-50;
+  * {
+    @apply font-menlo;
+  }
+  @font-face {
+    font-family: "Menlo";
+    src: url("../../public/assets/fonts/Menlo-Bold-Italic.ttf") format("opentype");
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Menlo";
+    src: url("../../public/assets/fonts/Menlo-Bold.ttf") format("opentype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Menlo";
+    src: url("../../public/assets/fonts/Menlo-Italic.ttf") format("opentype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Menlo";
+    src: url("../../public/assets/fonts/Menlo-Regular.ttf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
   }
 }

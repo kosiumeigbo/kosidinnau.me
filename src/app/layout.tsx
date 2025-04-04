@@ -4,16 +4,16 @@ import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
   title: "Kosidinna Umeigbo",
-  description: "Learner and developer"
+  description: "Learner and developer",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={GeistSans.variable}>
+    <html lang="en">
       <body suppressHydrationWarning={true}>
         <main>{children}</main>
       </body>
