@@ -24,6 +24,12 @@ export const getInfoObjForFileInWritings = async function (slug: string) {
     lines.push(line);
   }
 
+  console.log(lines);
+
+  if (lines.filter((obj) => obj.trim() === "---").length < 2) {
+    throw Error(`Invalid frontmatter found in '${slug}.html'`);
+  }
+
   let endOfFrontmatter = 0;
   let linesIndex = 0;
 
@@ -40,7 +46,7 @@ export const getInfoObjForFileInWritings = async function (slug: string) {
     .map((str) => str.trim());
 
   if (frontMatterArray.length === 0) {
-    throw Error("Invalid Frontmatter");
+    throw Error(`Invalid frontmatter found in '${slug}.html'`);
   }
 
   const htmlContent = lines.join("");
@@ -51,14 +57,8 @@ export const getInfoObjForFileInWritings = async function (slug: string) {
 
 export const getInfoObjArrayForAllFilesInWritings = async function () {
   const promisesArray = getSlugsForAllWritings().map((slug) => getInfoObjForFileInWritings(slug));
-  const settledValues = await Promise.allSettled(promisesArray);
-  const infoObjArray = settledValues
-    .filter(
-      (obj): obj is PromiseFulfilledResult<{ title: string; date: string; htmlContent: string; slug: string }> =>
-        obj.status === "fulfilled",
-    )
-    .map((obj) => obj.value);
-  return infoObjArray;
+  const settledValues = await Promise.all(promisesArray);
+  return settledValues;
 };
 
 void getSlugsForAllWritings().map((slug) => getInfoObjForFileInWritings(slug));
