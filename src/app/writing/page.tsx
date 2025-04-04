@@ -1,5 +1,5 @@
 import React from "react";
-import { getInfoObjArrayForAllFilesInWritings } from "@/utils";
+import { getInfoObjArrayForAllFilesInWritings } from "@/lib/utils";
 
 export default async function Page() {
   const writingObjectsArray = await getInfoObjArrayForAllFilesInWritings();

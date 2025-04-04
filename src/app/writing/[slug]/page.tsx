@@ -1,5 +1,5 @@
 import React from "react";
-import { getInfoObjForFileInWritings } from "../../../utils";
+import { getInfoObjForFileInWritings } from "@/lib/utils";
 import style from "./style.module.css";
 import { redirect } from "next/navigation";
 
