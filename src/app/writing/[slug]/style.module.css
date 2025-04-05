@@ -1,4 +1,7 @@
 .blogEntry h1 {
   font-size: 30px;
   color: blue;
+  font-family: "Menlo";
+  font-weight: 500;
+  font-size: 10px;
 }
