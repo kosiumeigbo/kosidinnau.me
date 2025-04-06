@@ -1,8 +1,8 @@
 import React from "react";
-import { getInfoObjArrayForAllFilesInWritings } from "@/lib/utils";
+import { getMetaDataForAllFilesInWritings } from "@/lib/writings";
 
 export default async function Page() {
-  const writingObjectsArray = await getInfoObjArrayForAllFilesInWritings();
+  const writingObjectsArray = await getMetaDataForAllFilesInWritings();
   return (
     <div>
       {writingObjectsArray.map((obj, i) => (
