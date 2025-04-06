@@ -2,6 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
 
+const propKeysStringValue = ["title", "description"] as const;
+const propKeysNotStringValue = ["date", "tags"] as const;
+// const allPropKeys = [...propKeysStringValue, ...propKeysNotStringValue];
+
+type PropKeysStringValueType = (typeof propKeysStringValue)[number];
+type PropKeysNotStringValueType = (typeof propKeysNotStringValue)[number];
+
 const getSlugsForAllWritings = function () {
   const writingsPath = path.resolve(process.cwd(), "writings");
   const filesInWritings = fs.readdirSync(writingsPath);
