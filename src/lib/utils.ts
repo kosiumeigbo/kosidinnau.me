@@ -59,7 +59,42 @@ export const getInfoObjForFileInWritings = async function (slug: string) {
   const htmlContent = lines.join("");
   console.log(frontMatterArray, slug, htmlContent);
 
-  return { title: "Writing Post", date: Date.now().toString(), htmlContent, slug };
+  const documentDataPropKeyStringValuesObject = Object.fromEntries(
+    propKeysStringValue.map((propKey) => [propKey, getFrontMatterPropKeyStringValue(frontMatterArray, slug, propKey)]),
+  ) as Record<PropKeysStringValueType, string>;
+
+  console.log(JSON.stringify(documentDataPropKeyStringValuesObject));
+
+  return { ...documentDataPropKeyStringValuesObject, date: Date.now().toString(), htmlContent, slug };
+};
+
+const getFrontMatterPropKeyStringValue = function (
+  frontMatterArray: string[],
+  slug: string,
+  propKey: PropKeysStringValueType,
+) {
+  const filteredPropArray = frontMatterArray.filter((str) => str.split(":")[0].trim().toLowerCase() === propKey);
+  if (filteredPropArray.length > 1) {
+    throw new Error(`Invalid Frontmatter: Multiple '${propKey}' props found in '${slug}.html'`);
+  }
+
+  if (filteredPropArray.length === 0) {
+    throw new Error(`Invalid Frontmatter: No '${propKey}' prop found in '${slug}.html'`);
+  }
+
+  const [_, ...propValues] = filteredPropArray[0].split(":");
+  if (propValues.length === 0) {
+    throw new Error(`Invalid Frontmatter: Empty '${propKey}' value found in '${slug}.html'`);
+  }
+
+  if (propValues.length === 1) {
+    if (propValues[0].length === 0) {
+      throw new Error(`Invalid Frontmatter: Empty '${propKey}' value found in '${slug}.html'`);
+    }
+    return propValues[0].trim();
+  }
+
+  return propValues.join(":").trim();
 };
 
 export const getInfoObjArrayForAllFilesInWritings = async function () {
