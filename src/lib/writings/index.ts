@@ -1,9 +1,13 @@
-import { getSlugsForAllWritings, getFrontMatterPropKeyStringValue } from "./helpers";
 import {
-  PropKeysNotStringValueType,
+  getSlugsForAllWritings,
+  getPropKeyStringValueFromFrontMatter,
+  getPropKeyNonStringValueFromFrontMatter,
+} from "./helpers";
+import {
+  PropKeysNonStringValueType,
   PropKeysStringValueType,
   propKeysStringValue,
-  propKeysNotStringValue,
+  propKeysNonStringValue,
 } from "@/lib/types";
 import fs from "node:fs";
 import path from "node:path";
@@ -22,8 +26,6 @@ export const getMetaDataForFileInWritings = async function (slug: string) {
   for await (const line of rl) {
     lines.push(line);
   }
-
-  console.log(lines);
 
   if (lines.filter((obj) => obj.trim() === "---").length < 2) {
     throw Error(`Invalid frontmatter found in '${slug}.html'`);
@@ -49,15 +51,32 @@ export const getMetaDataForFileInWritings = async function (slug: string) {
   }
 
   const htmlContent = lines.join("");
-  console.log(frontMatterArray, slug, htmlContent);
 
   const documentDataPropKeyStringValuesObject = Object.fromEntries(
-    propKeysStringValue.map((propKey) => [propKey, getFrontMatterPropKeyStringValue(frontMatterArray, slug, propKey)]),
+    propKeysStringValue.map((propKey) => [
+      propKey,
+      getPropKeyStringValueFromFrontMatter(frontMatterArray, slug, propKey),
+    ]),
   ) as Record<PropKeysStringValueType, string>;
 
-  console.log(JSON.stringify(documentDataPropKeyStringValuesObject));
+  const documentDataPropKeyNotStringValuesObject = Object.fromEntries(
+    propKeysNonStringValue.map((propKey) => [
+      propKey,
+      getPropKeyNonStringValueFromFrontMatter(frontMatterArray, slug, propKey),
+    ]),
+  ) as Record<Extract<PropKeysNonStringValueType, "date">, Date> &
+    Record<Extract<PropKeysNonStringValueType, "tags">, string[]>;
 
-  return { ...documentDataPropKeyStringValuesObject, date: Date.now().toString(), htmlContent, slug };
+  const metaDataForFileInWritings = {
+    ...documentDataPropKeyStringValuesObject,
+    ...documentDataPropKeyNotStringValuesObject,
+    htmlContent,
+    slug,
+  };
+
+  console.log(metaDataForFileInWritings);
+
+  return metaDataForFileInWritings;
 };
 
 export const getMetaDataForAllFilesInWritings = async function () {
