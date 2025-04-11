@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ReloadWatcher } from "@/lib/components/reload-watcher";
 
 export const metadata: Metadata = {
   title: "Kosidinna Umeigbo",
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
+        <ReloadWatcher />
         <main>{children}</main>
       </body>
     </html>
