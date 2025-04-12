@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
+    "dev": "concurrently \"node ./scripts/reload-server.js\" \"next dev --port 3001\"",
     "build": "next build",
     "start": "next start --port 3001",
     "lint": "eslint .",
@@ -28,7 +28,11 @@
     "@types/node": "^20",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
+    "@types/ws": "^8.18.1",
     "autoprefixer": "^10.0.1",
+    "chokidar": "^4.0.3",
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.5.0",
     "eslint": "^9.22.0",
     "husky": "^9.1.7",
     "postcss": "^8",
@@ -36,7 +40,8 @@
     "prettier-plugin-tailwindcss": "0.6.11",
     "tailwindcss": "^3.3.0",
     "typescript": "^5",
-    "typescript-eslint": "^8.27.0"
+    "typescript-eslint": "^8.27.0",
+    "ws": "^8.18.1"
   },
   "pnpm": {
     "overrides": {
