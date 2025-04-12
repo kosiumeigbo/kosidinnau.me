@@ -12,19 +12,13 @@ const HTTP_SERVER_PORT = "8080";
 const writingsDirectory = resolve(process.cwd(), "writings");
 console.log(writingsDirectory);
 const watcher = watch(writingsDirectory, {});
-watcher.on("add", (path) => {
-  console.log(`This was added: ${path}`);
-});
-watcher.on("change", (path) => {
-  console.log(`[Reload] File changed: ${path}`);
-});
 
 const wss = new WebSocketServer({ port: parseInt(process.env.WS_SERVER_PORT || WS_SERVER_PORT, 10) });
 wss.on("connection", (ws) => {
   console.log("[Reload] Client connected");
   watcher.on("change", (path) => {
     console.log(`[Reload] File changed: ${path}`);
-    if (ws.readyState === WebSocket.OPEN) {
+    if (ws.readyState === 1) {
       ws.send("reload");
     }
   });
