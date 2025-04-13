@@ -21,7 +21,7 @@ function DevReloadWatcher() {
       ws.removeEventListener("message", handleReloadOnMessage);
       ws.close();
     };
-  });
+  }, []);
 
   return <></>;
 }
