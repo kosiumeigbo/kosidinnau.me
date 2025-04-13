@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ReloadWatcher } from "@/lib/components/reload-watcher";
+import { ReloadWatcher } from "./reload-watcher";
 
 export const metadata: Metadata = {
   title: "Kosidinna Umeigbo",
