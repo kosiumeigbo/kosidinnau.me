@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 
 const navLinkArr = [
   { name: "Home", path: "/" },
-  { name: "Writing", path: "/writing" },
+  { name: "Writings", path: "/writings" },
 ] as const;
 
 export type NavLinkArr = typeof navLinkArr;
