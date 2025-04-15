@@ -4,9 +4,10 @@ import React from "react";
 import { Container } from "./container";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const navLinkArr = [
-  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
   { name: "Writings", path: "/writings" },
 ] as const;
 
@@ -16,15 +17,23 @@ export function NavBar({ className, ...props }: React.ComponentProps<"nav">): Re
   const pathname = usePathname();
 
   return (
-    <nav className={cn("border-b-secondary-100 relative w-full border-b", className)} {...props}>
+    <nav className={cn("relative w-full border-b", className)} {...props}>
       <Container>
-        {navLinkArr.map((routeObj, i) => {
-          return (
-            <div className={cn({ "bg-red-300": routeObj.path === pathname })} key={i}>
-              {routeObj.name}
-            </div>
-          );
-        })}
+        <div className="flex w-full items-center justify-center gap-5 py-2">
+          {navLinkArr.map((routeObj, i) => {
+            return (
+              <Link
+                className={cn("border-b-2 border-transparent px-4 py-0", {
+                  "border-red-800": routeObj.path === pathname,
+                })}
+                key={i}
+                href={routeObj.path}
+              >
+                {routeObj.name}
+              </Link>
+            );
+          })}
+        </div>
       </Container>
     </nav>
   );
