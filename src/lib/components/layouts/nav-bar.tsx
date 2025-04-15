@@ -5,6 +5,8 @@ import { Container } from "./container";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import youngMe from "~/public/images/young-me.jpeg";
 
 const navLinkArr = [
   { name: "About", path: "/about" },
@@ -17,9 +19,9 @@ export function NavBar({ className, ...props }: React.ComponentProps<"nav">): Re
   const pathname = usePathname();
 
   return (
-    <nav className={cn("relative w-full border-b", className)} {...props}>
+    <nav className={cn("relative w-full border-b py-0.5", className)} {...props}>
       <Container>
-        <div className="flex w-full items-center justify-center gap-5 py-2">
+        <div className="relative flex w-full items-center justify-center gap-5 py-1">
           {navLinkArr.map((routeObj, i) => {
             return (
               <Link
@@ -33,6 +35,11 @@ export function NavBar({ className, ...props }: React.ComponentProps<"nav">): Re
               </Link>
             );
           })}
+          <div className="absolute left-0 top-0 aspect-square h-full rounded-xl">
+            <Link href={"/"}>
+              <Image src={youngMe} alt="Photo of a young Kosidinna" className="rounded-full"></Image>
+            </Link>
+          </div>
         </div>
       </Container>
     </nav>
