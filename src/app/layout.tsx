@@ -3,8 +3,7 @@ import "./globals.css";
 import { ReloadWatcher } from "./reload-watcher";
 
 export const metadata: Metadata = {
-  title: "Kosidinna Umeigbo",
-  description: "Learner and developer",
+  title: "Kosidinna Umeigbo - Developer, Blogger, Learner",
 };
 
 export default function RootLayout({
