@@ -21,11 +21,11 @@ export function NavBar({ className, ...props }: React.ComponentProps<"nav">): Re
   return (
     <nav className={cn("relative w-full border-b py-0.5", className)} {...props}>
       <Container>
-        <div className="relative flex w-full items-center justify-center gap-5 py-1">
+        <div className="relative flex w-full items-center justify-center gap-3 py-1 xs:gap-5">
           {navLinkArr.map((routeObj, i) => {
             return (
               <Link
-                className={cn("border-b-2 border-transparent px-4 py-0", {
+                className={cn("border-b-2 border-transparent px-4 py-0 text-sm xs:text-base", {
                   "border-red-800": routeObj.path === pathname,
                 })}
                 key={i}
@@ -36,9 +36,12 @@ export function NavBar({ className, ...props }: React.ComponentProps<"nav">): Re
             );
           })}
           <div className="absolute left-0 top-0 aspect-square h-full rounded-xl">
-            <Link href={"/"}>
-              <Image src={youngMe} alt="Photo of a young Kosidinna" className="rounded-full"></Image>
-            </Link>
+            <Image
+              src={youngMe}
+              alt="Photo of a young Kosidinna"
+              className="rounded-full"
+              title="Photo of a young Kosidinna"
+            ></Image>
           </div>
         </div>
       </Container>
