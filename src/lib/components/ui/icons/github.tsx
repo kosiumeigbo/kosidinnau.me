@@ -8,7 +8,7 @@ export function Github({ className }: ComponentProps<"svg">) {
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMinYMin meet"
       fill="#000000"
-      className={cn("h-7 w-7", className)}
+      className={cn(className)}
     >
       <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
