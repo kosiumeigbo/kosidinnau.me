@@ -8,16 +8,28 @@ export default async function Page() {
   return (
     <div className="w-full">
       <Container>
-        <ol>
-          {writingObjectsArray.map(({ title, slug, description }, i) => (
-            <li key={i}>
-              <div>
-                {i + 1} <Link href={`/writings/${slug}`}>{title}</Link>
-              </div>
-              <p>{description}</p>
-            </li>
-          ))}
-        </ol>
+        <ul className="list-outside list-disc">
+          {writingObjectsArray
+            .sort((a, b) => {
+              if (a.date < b.date) {
+                return 1;
+              }
+              if (a.date > b.date) {
+                return -1;
+              }
+              return 0;
+            })
+            .map(({ title, slug, description }, i) => (
+              <li key={i}>
+                <div className="ml-5">
+                  <div className="italic underline">
+                    <Link href={`/writings/${slug}`}>{title}</Link>
+                  </div>
+                  <p>{description}</p>
+                </div>
+              </li>
+            ))}
+        </ul>
       </Container>
     </div>
   );
