@@ -1,6 +1,14 @@
 import React from "react";
-import { getMetaDataForFileInWritings } from "@/lib/writings";
+import { getMetaDataForFileInWritings, getSlugsForAllWritings } from "@/lib/writings";
 import { redirect } from "next/navigation";
+
+export function generateStaticParams() {
+  const slugs = getSlugsForAllWritings();
+
+  return slugs.map((slug) => ({
+    slug,
+  }));
+}
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
