@@ -84,3 +84,5 @@ export const getMetaDataForAllFilesInWritings = async function () {
   const settledValues = await Promise.all(promisesArray);
   return settledValues;
 };
+
+export { getSlugsForAllWritings };
