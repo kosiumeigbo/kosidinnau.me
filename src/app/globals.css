@@ -35,33 +35,3 @@
     font-display: swap;
   }
 }
-
-/* ---------- CSS for rendered writing html ---------- */
-.writing {
-  hr {
-    border: 0;
-    width: 50%;
-    height: 1px;
-    background-color: darkslateblue;
-    margin: 0 auto;
-  }
-  h1 {
-    font-size: 30px;
-    color: blue;
-    font-family: "Menlo";
-    font-weight: 600;
-    font-size: 20px;
-  }
-}
-
-@media screen and (max-width: 1536px) {
-}
-@media screen and (max-width: 1280px) {
-}
-@media screen and (max-width: 768px) {
-}
-@media screen and (max-width: 640px) {
-}
-@media screen and (max-width: 420px) {
-}
-/* --------------------------------------------------- */

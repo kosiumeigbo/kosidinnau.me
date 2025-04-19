@@ -1,4 +1,5 @@
 import React from "react";
+import style from "./style.module.css";
 import { getMetaDataForFileInWritings, getSlugsForAllWritings } from "@/lib/writings";
 import { redirect } from "next/navigation";
 
@@ -21,7 +22,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="writing"></div>
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className={style["writing-piece"]}></div>
     </>
   );
 }
