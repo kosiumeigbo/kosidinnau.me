@@ -16,11 +16,13 @@ const watcher = watch(writingsDirectory, {});
 const wss = new WebSocketServer({ port: parseInt(process.env.WS_SERVER_PORT || WS_SERVER_PORT, 10) });
 wss.on("connection", (ws) => {
   console.log("[Reload] Client connected");
-  watcher.on("change", (path) => {
-    console.log(`[Reload] File changed: ${path}`);
-    if (ws.readyState === 1) {
-      ws.send("reload");
-    }
+  ["change", "add", "unlink"].forEach((event) => {
+    watcher.on(event, (path) => {
+      console.log(`[Reload] File changed: ${path}`);
+      if (ws.readyState === 1) {
+        ws.send("reload");
+      }
+    });
   });
 });
 
