@@ -1,5 +1,4 @@
 import React from "react";
-import style from "./style.module.css";
 import { getMetaDataForFileInWritings, getSlugsForAllWritings } from "@/lib/writings";
 import { redirect } from "next/navigation";
 import { Container } from "@/lib/components";
@@ -23,7 +22,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <Container className="max-w-[60rem]">
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className={style["writing-piece"]}></div>
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full"></div>
     </Container>
   );
 }
