@@ -1,7 +1,7 @@
 import React from "react";
-import style from "./style.module.css";
 import { getMetaDataForFileInWritings, getSlugsForAllWritings } from "@/lib/writings";
 import { redirect } from "next/navigation";
+import { Container } from "@/lib/components";
 
 export function generateStaticParams() {
   const slugs = getSlugsForAllWritings();
@@ -18,11 +18,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const writingMetaData = await getMetaDataForFileInWritings(slug);
   if (!writingMetaData) return redirect("/");
 
-  const { htmlContent } = writingMetaData;
+  const { htmlContent, title, tags, date } = writingMetaData;
 
   return (
-    <>
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className={style["writing-piece"]}></div>
-    </>
+    <Container className="max-w-[45rem] text-sm">
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full" id="writing-piece"></div>
+    </Container>
   );
 }
