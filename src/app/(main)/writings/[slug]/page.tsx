@@ -18,11 +18,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const writingMetaData = await getMetaDataForFileInWritings(slug);
   if (!writingMetaData) return redirect("/");
 
-  const { htmlContent } = writingMetaData;
+  const { htmlContent, title, tags, date } = writingMetaData;
 
   return (
-    <Container className="max-w-[60rem]">
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full"></div>
+    <Container className="max-w-[45rem] text-sm">
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full" id="writing-piece"></div>
     </Container>
   );
 }

@@ -34,4 +34,10 @@
     font-style: normal;
     font-display: swap;
   }
+
+  #writing-piece {
+    p {
+      @apply bg-red-700;
+    }
+  }
 }
