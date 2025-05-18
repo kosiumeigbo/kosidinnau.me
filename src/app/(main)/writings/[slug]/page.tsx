@@ -21,8 +21,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const { htmlContent, title, tags, date } = writingMetaData;
 
   return (
-    <Container className="max-w-[45rem] text-sm">
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full" id="writing-piece"></div>
-    </Container>
+    <div className="py-5">
+      <Container className="max-w-[45rem] text-sm">
+        <h1>{title}</h1>
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full" id="writing-piece"></div>
+      </Container>
+    </div>
   );
 }
