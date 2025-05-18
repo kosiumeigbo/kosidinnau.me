@@ -24,6 +24,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     <div className="py-5">
       <Container className="max-w-[45rem] text-sm">
         <h1>{title}</h1>
+        <div className="text-right text-xs italic sm:text-sm">{date.toDateString()}</div>
         <div className="flex flex-wrap gap-1">
           {tags.map((tag, i) => (
             <span className="rounded-xl bg-slate-100 px-2 py-1 text-xs sm:text-sm md:text-base" key={i} title={tag}>
