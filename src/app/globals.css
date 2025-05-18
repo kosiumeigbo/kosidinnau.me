@@ -4,7 +4,7 @@
 
 @layer base {
   * {
-    @apply font-menlo;
+    @apply font-merri;
   }
   @font-face {
     font-family: "Menlo";
@@ -35,9 +35,20 @@
     font-display: swap;
   }
 
-  #writing-piece {
-    p {
-      @apply bg-red-700;
-    }
+  @font-face {
+    font-family: "Merriweather";
+    src: url("../../public/assets/fonts/Merriweather-Italic.ttf") format("opentype");
+    font-style: italic;
+    font-display: swap;
   }
+
+  @font-face {
+    font-family: "Merriweather";
+    src: url("../../public/assets/fonts/Merriweather-Regular.ttf") format("opentype");
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /*  #writing-piece {
+  } */
 }
