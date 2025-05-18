@@ -26,7 +26,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <h1>{title}</h1>
         <div className="flex flex-wrap gap-1">
           {tags.map((tag, i) => (
-            <span className="rounded-xl bg-slate-100 px-2 py-1 text-xs sm:text-sm md:text-base" key={i}>
+            <span className="rounded-xl bg-slate-100 px-2 py-1 text-xs sm:text-sm md:text-base" key={i} title={tag}>
               {tag}
             </span>
           ))}
