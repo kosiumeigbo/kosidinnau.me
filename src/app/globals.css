@@ -55,7 +55,7 @@
 
   #writing-piece {
     hr {
-      @apply mx-auto w-[50%];
+      @apply mx-auto w-[50%] border-black;
     }
     a {
       @apply italic underline hover:text-slate-500;
