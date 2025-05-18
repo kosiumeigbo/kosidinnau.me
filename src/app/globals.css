@@ -49,6 +49,24 @@
     font-display: swap;
   }
 
-  /*  #writing-piece {
-  } */
+  h1 {
+    @apply mb-5 text-center text-2xl font-bold sm:text-3xl md:text-4xl;
+  }
+
+  #writing-piece {
+    hr {
+      @apply mx-auto w-[50%];
+    }
+    a {
+      @apply italic underline hover:text-slate-500;
+    }
+
+    p {
+      @apply my-5 text-sm font-light leading-loose sm:text-base sm:leading-[35px] md:text-lg md:leading-[40px];
+    }
+
+    strong {
+      @apply font-bold;
+    }
+  }
 }
