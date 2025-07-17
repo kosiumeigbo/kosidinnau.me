@@ -86,7 +86,7 @@
     }
 
     section {
-      @apply my-16;
+      @apply mb-16;
     }
 
     p {
