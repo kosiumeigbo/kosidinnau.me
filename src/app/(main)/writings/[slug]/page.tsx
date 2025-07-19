@@ -32,7 +32,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             </span>
           ))}
         </div>
-        <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full" id="writing-piece"></div>
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="w-full pt-5" id="writing-piece"></div>
       </Container>
     </div>
   );
