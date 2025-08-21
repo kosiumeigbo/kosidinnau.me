@@ -66,6 +66,14 @@
   }
 
   #writing-piece {
+    * {
+      @apply text-sm font-light sm:text-base md:text-lg;
+    }
+    .starting-note,
+    .starting-note > a {
+      @apply my-5 text-[12px] italic leading-[25px] sm:text-sm sm:leading-[30px];
+    }
+
     h2 {
       @apply mb-4 text-xl font-bold sm:text-2xl md:text-3xl;
     }
