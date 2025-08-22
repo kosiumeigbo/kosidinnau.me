@@ -70,7 +70,7 @@
       @apply text-sm font-light sm:text-base md:text-lg;
     }
     .starting-note,
-    .starting-note > a {
+    .starting-note * {
       @apply my-5 text-[12px] italic leading-[25px] sm:text-sm sm:leading-[30px];
     }
 
