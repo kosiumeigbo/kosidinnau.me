@@ -64,58 +64,59 @@
   h4 {
     @apply mb-2 text-base font-bold sm:text-lg md:text-xl;
   }
+}
 
-  #writing-piece {
-    * {
-      @apply text-sm font-light sm:text-base md:text-lg;
-    }
-    .starting-note,
-    .starting-note * {
-      @apply my-5 text-[12px] italic leading-[25px] sm:text-sm sm:leading-[30px];
-    }
+#writing-piece {
+  * {
+    @apply text-sm sm:text-base md:text-lg;
+  }
 
-    h2 {
-      @apply mb-4 text-xl font-bold sm:text-2xl md:text-3xl;
-    }
+  h2 {
+    @apply mb-4 text-xl font-bold sm:text-2xl md:text-3xl;
+  }
 
-    h3 {
-      @apply mb-3 text-lg font-bold sm:text-xl md:text-2xl;
-    }
+  h3 {
+    @apply mb-3 text-lg font-bold sm:text-xl md:text-2xl;
+  }
 
-    h4 {
-      @apply mb-2 text-base font-bold sm:text-lg md:text-xl;
-    }
+  h4 {
+    @apply mb-2 text-base font-bold sm:text-lg md:text-xl;
+  }
 
-    hr {
-      @apply mx-auto my-4 w-[50%] border-black;
-    }
-    a {
-      @apply italic underline hover:text-slate-500;
-    }
+  hr {
+    @apply mx-auto my-4 w-[50%] border-black;
+  }
+  a {
+    @apply italic underline hover:text-slate-500;
+  }
 
-    section {
-      @apply mb-16;
-    }
+  section {
+    @apply mb-16;
+  }
 
-    p {
-      @apply mb-6 text-sm font-light leading-loose sm:text-base sm:leading-[35px] md:text-lg md:leading-[40px];
-    }
+  p {
+    @apply mb-6 text-sm font-light leading-loose sm:text-base sm:leading-[35px] md:text-lg md:leading-[40px];
+  }
 
-    strong {
-      @apply font-bold;
-    }
+  strong {
+    @apply font-bold;
+  }
 
-    ol,
-    ul {
-      @apply list-outside pl-4 text-sm font-light leading-loose sm:text-base sm:leading-[35px] md:text-lg md:leading-[40px];
-    }
+  ol,
+  ul {
+    @apply list-outside pl-4 text-sm font-light leading-loose sm:text-base sm:leading-[35px] md:text-lg md:leading-[40px];
+  }
 
-    ol {
-      @apply list-decimal;
-    }
+  ol {
+    @apply list-decimal;
+  }
 
-    ul {
-      @apply list-disc;
-    }
+  ul {
+    @apply list-disc;
+  }
+
+  .starting-note,
+  .starting-note * {
+    @apply my-5 text-[12px] font-light italic leading-[25px] sm:text-sm sm:leading-[30px];
   }
 }
