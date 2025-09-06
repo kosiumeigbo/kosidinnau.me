@@ -14,7 +14,6 @@ const config: Config = {
       },
     },
     fontFamily: {
-      menlo: ["Menlo", ...mono],
       merri: ["Merriweather", ...mono],
     },
   },
