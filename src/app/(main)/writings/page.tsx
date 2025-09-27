@@ -27,8 +27,13 @@ export default async function Page() {
               <li key={i} className="mb-3 sm:mb-5">
                 <div className="grid grid-cols-[auto_1fr] gap-x-2 sm:gap-x-3">
                   <span>-</span>
-                  <div className="text-sm italic no-underline hover:text-slate-500 sm:text-base md:underline">
-                    <Link href={`/writings/${slug}`}>{title}</Link>
+                  <div>
+                    <Link
+                      href={`/writings/${slug}`}
+                      className="text-sm italic no-underline hover:text-slate-500 sm:text-base md:underline"
+                    >
+                      {title}
+                    </Link>
                   </div>
                   <div></div>
                   <p className="hidden md:block md:text-sm">{description}</p>
