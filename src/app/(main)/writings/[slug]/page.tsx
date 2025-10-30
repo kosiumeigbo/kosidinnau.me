@@ -2,6 +2,7 @@ import React from "react";
 import { getMetaDataForFileInWritings, getSlugsForAllWritings } from "@/lib/writings";
 import { redirect } from "next/navigation";
 import { Container } from "@/lib/components";
+import { Metadata } from "next";
 
 export function generateStaticParams() {
   const slugs = getSlugsForAllWritings();
@@ -11,12 +12,27 @@ export function generateStaticParams() {
   }));
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  if (!slug) return redirect("/");
+  if (!slug) return redirect("/writings");
 
   const writingMetaData = await getMetaDataForFileInWritings(slug);
-  if (!writingMetaData) return redirect("/");
+  if (!writingMetaData) return redirect("/writings");
+
+  const { title, description } = writingMetaData;
+
+  return { title, description };
+}
+
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  if (!slug) return redirect("/writings");
+
+  const slugs = getSlugsForAllWritings();
+  if (!slugs.includes(slug)) return redirect("/writings");
+
+  const writingMetaData = await getMetaDataForFileInWritings(slug);
+  if (!writingMetaData) return redirect("/writings");
 
   const { htmlContent, title, tags, date } = writingMetaData;
 
