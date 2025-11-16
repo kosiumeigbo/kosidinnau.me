@@ -67,7 +67,7 @@
   }
 
   p {
-    @apply mb-6 text-sm font-light leading-loose sm:text-base sm:leading-[35px] md:text-lg md:leading-[40px];
+    @apply my-10 text-sm font-light leading-loose sm:text-base sm:leading-[35px] md:text-lg md:leading-[40px];
   }
 
   strong {
