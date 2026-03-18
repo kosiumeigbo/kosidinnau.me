@@ -1,11 +1,13 @@
-import * as z from "zod";
+export const allFrontMatterKeys = ["title", "description", "dateOriginallyPublished", "dateModified", "tags"] as const;
+export const dateOriginallyPublished = allFrontMatterKeys[2];
+export const dateModified = allFrontMatterKeys[3];
 
-export const propKeysStringValue = ["title", "description"] as const;
-export const propKeysNonStringValue = ["date", "tags"] as const;
-// export const allPropKeys = [...propKeysStringValue, ...propKeysNotStringValue];
+export type FrontMatterObjectType = {
+  title: string;
+  description: string;
+  dateOriginallyPublished: Date;
+  dateModified: Date;
+  tags: string[];
+};
 
-export const propKeysStringValueSchema = z.enum(propKeysStringValue);
-export const propKeysNonStringValueSchema = z.enum(propKeysNonStringValue);
-
-export type PropKeysStringValueType = (typeof propKeysStringValue)[number];
-export type PropKeysNonStringValueType = (typeof propKeysNonStringValue)[number];
+export type FrontMatterObjectKeysType = (typeof allFrontMatterKeys)[number];
