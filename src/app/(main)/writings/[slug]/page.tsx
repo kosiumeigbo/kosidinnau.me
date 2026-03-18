@@ -34,13 +34,21 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const writingMetaData = await getMetaDataForSingleFileInWritings(slug);
   if (!writingMetaData) return redirect("/writings");
 
-  const { htmlContent, title, tags, dateOriginallyPublished } = writingMetaData;
+  const { htmlContent, title, tags, dateOriginallyPublished, dateModified } = writingMetaData;
+
+  const dateOriginallyPublishedDateString = dateOriginallyPublished.toDateString();
+  const dateModifiedDateString = dateModified.toDateString();
 
   return (
     <div className="py-5">
       <Container className="max-w-[45rem] text-sm">
         <h1>{title}</h1>
-        <div className="text-right text-xs italic sm:text-sm">{dateOriginallyPublished.toDateString()}</div>
+        <div className="pb-2 text-right text-xs italic sm:text-sm">
+          First published {dateOriginallyPublishedDateString}
+        </div>
+        {dateModifiedDateString !== dateOriginallyPublishedDateString ? (
+          <div className="pb-2 text-right text-xs italic sm:text-sm">Last edited {dateModifiedDateString}</div>
+        ) : null}
         <div className="flex flex-wrap gap-1">
           {tags.map((tag, i) => (
             <span className="rounded-xl bg-slate-100 px-2 py-1 text-xs sm:text-sm md:text-base" key={i} title={tag}>
