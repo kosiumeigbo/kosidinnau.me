@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { PropKeysStringValueType, PropKeysNonStringValueType } from "@/lib/types";
+import type { FrontMatterObjectKeysType } from "@/lib/types";
 
 const validatePropKeysFrontMatterValue = function (
   frontMatterArray: string[],
   slug: string,
-  propKey: PropKeysStringValueType | PropKeysNonStringValueType,
+  propKey: FrontMatterObjectKeysType,
 ) {
-  const filteredPropArray = frontMatterArray.filter((str) => str.split(":")[0].trim().toLowerCase() === propKey);
+  const filteredPropArray = frontMatterArray.filter((str) => str.split(":")[0].trim() === propKey);
   if (filteredPropArray.length > 1) {
     throw new Error(`Invalid Frontmatter: Multiple '${propKey}' props found in '${slug}.html'`);
   }
@@ -41,21 +41,27 @@ export const getSlugsForAllWritings = function () {
 export const getPropKeyStringValueFromFrontMatter = function (
   frontMatterArray: string[],
   slug: string,
-  propKey: PropKeysStringValueType,
+  propKey: FrontMatterObjectKeysType,
 ) {
   const validStringValueForPropKey = validatePropKeysFrontMatterValue(frontMatterArray, slug, propKey);
   return validStringValueForPropKey;
 };
 
-export const getPropKeyNonStringValueFromFrontMatter = function (
+export const getValueFromFrontMatterKey = function (
   frontMatterArray: string[],
   slug: string,
-  propKey: PropKeysNonStringValueType,
+  propKey: FrontMatterObjectKeysType,
 ) {
   const validFrontMatterValueForPropKey = validatePropKeysFrontMatterValue(frontMatterArray, slug, propKey);
 
   switch (propKey) {
-    case "date":
+    case "title":
+      return validFrontMatterValueForPropKey;
+    case "description":
+      return validFrontMatterValueForPropKey;
+    case "dateModified":
+      return getDateValue(validFrontMatterValueForPropKey, slug, propKey);
+    case "dateOriginallyPublished":
       return getDateValue(validFrontMatterValueForPropKey, slug, propKey);
     case "tags":
       return getTagsValue(validFrontMatterValueForPropKey);
@@ -67,7 +73,7 @@ export const getPropKeyNonStringValueFromFrontMatter = function (
 const getDateValue = function (
   validFrontMatterValueForPropKey: string,
   slug: string,
-  propKey: Extract<PropKeysNonStringValueType, "date">,
+  propKey: Extract<FrontMatterObjectKeysType, "dateOriginallyPublished" | "dateModified">,
 ) {
   const dateParamsArray = validFrontMatterValueForPropKey.split("-");
   if (dateParamsArray.length !== 3) {

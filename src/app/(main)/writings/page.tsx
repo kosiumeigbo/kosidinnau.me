@@ -15,10 +15,10 @@ export default async function Page() {
         <ul className="">
           {writingObjectsArray
             .sort((a, b) => {
-              if (a.date < b.date) {
+              if (a.dateOriginallyPublished < b.dateOriginallyPublished) {
                 return 1;
               }
-              if (a.date > b.date) {
+              if (a.dateOriginallyPublished > b.dateOriginallyPublished) {
                 return -1;
               }
               return 0;

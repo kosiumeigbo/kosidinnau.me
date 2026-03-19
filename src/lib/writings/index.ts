@@ -1,19 +1,10 @@
-import {
-  getSlugsForAllWritings,
-  getPropKeyStringValueFromFrontMatter,
-  getPropKeyNonStringValueFromFrontMatter,
-} from "./helpers";
-import {
-  PropKeysNonStringValueType,
-  PropKeysStringValueType,
-  propKeysStringValue,
-  propKeysNonStringValue,
-} from "@/lib/types";
+import { getSlugsForAllWritings, getValueFromFrontMatterKey } from "./helpers";
+import { FrontMatterObjectType, allFrontMatterKeys, dateOriginallyPublished, dateModified } from "@/lib/types";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
 
-export const getMetaDataForFileInWritings = async function (slug: string) {
+export const getMetaDataForSingleFileInWritings = async function (slug: string) {
   const filePath = path.resolve(process.cwd(), "writings", `${slug}.html`);
   const fileStream = fs.createReadStream(filePath);
 
@@ -46,30 +37,37 @@ export const getMetaDataForFileInWritings = async function (slug: string) {
     .filter((str) => str.trim() !== "" && str.trim() !== "---")
     .map((str) => str.trim());
 
-  if (frontMatterArray.length === 0) {
-    throw Error(`Invalid frontmatter found in '${slug}.html'`);
+  const dateOriginallyPublishedFrontMatterLine = frontMatterArray.find(
+    (str) => str.split(":")[0].trim() === dateOriginallyPublished,
+  );
+
+  if (!dateOriginallyPublishedFrontMatterLine) {
+    const newDatePublished = new Date();
+    const yearString = newDatePublished.getFullYear().toString();
+    const monthString = (newDatePublished.getMonth() + 1).toString();
+    const dayString = newDatePublished.getDate().toString();
+    frontMatterArray.push(`${dateOriginallyPublished}: ${yearString}-${monthString}-${dayString}`);
   }
+
+  const dateModifiedFrontMatterLine = frontMatterArray.find((str) => str.split(":")[0].trim() === dateModified);
+
+  if (!dateModifiedFrontMatterLine) {
+    const newDateModified = new Date();
+    const yearString = newDateModified.getFullYear().toString();
+    const monthString = (newDateModified.getMonth() + 1).toString();
+    const dayString = newDateModified.getDate().toString();
+    frontMatterArray.push(`${dateModified}: ${yearString}-${monthString}-${dayString}`);
+  }
+  console.log("FrontMatterArray: ", frontMatterArray);
 
   const htmlContent = lines.join("");
 
-  const documentDataPropKeyStringValuesObject = Object.fromEntries(
-    propKeysStringValue.map((propKey) => [
-      propKey,
-      getPropKeyStringValueFromFrontMatter(frontMatterArray, slug, propKey),
-    ]),
-  ) as Record<PropKeysStringValueType, string>;
-
-  const documentDataPropKeyNotStringValuesObject = Object.fromEntries(
-    propKeysNonStringValue.map((propKey) => [
-      propKey,
-      getPropKeyNonStringValueFromFrontMatter(frontMatterArray, slug, propKey),
-    ]),
-  ) as Record<Extract<PropKeysNonStringValueType, "date">, Date> &
-    Record<Extract<PropKeysNonStringValueType, "tags">, string[]>;
+  const documentFrontMatterValuesObject = Object.fromEntries(
+    allFrontMatterKeys.map((propKey) => [propKey, getValueFromFrontMatterKey(frontMatterArray, slug, propKey)]),
+  ) as unknown as FrontMatterObjectType;
 
   const metaDataForFileInWritings = {
-    ...documentDataPropKeyStringValuesObject,
-    ...documentDataPropKeyNotStringValuesObject,
+    ...documentFrontMatterValuesObject,
     htmlContent,
     slug,
   };
@@ -80,7 +78,7 @@ export const getMetaDataForFileInWritings = async function (slug: string) {
 };
 
 export const getMetaDataForAllFilesInWritings = async function () {
-  const promisesArray = getSlugsForAllWritings().map((slug) => getMetaDataForFileInWritings(slug));
+  const promisesArray = getSlugsForAllWritings().map((slug) => getMetaDataForSingleFileInWritings(slug));
   const settledValues = await Promise.all(promisesArray);
   return settledValues;
 };

@@ -1,2 +1,8 @@
 #!/usr/bin/env sh
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if ["$CURRENT_BRANCH" = "main"]; then
+    echo "Cannot commit directly to main!"
+    exit 1
+fi
+echo "$CURRENT_BRANCH"
 pnpm lint-staged
