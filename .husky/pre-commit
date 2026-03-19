@@ -1,2 +1,4 @@
 #!/usr/bin/env sh
+CURRENT_BRANCH=$(git rev-parse --abrev-ref HEAD)
+echo "$CURRENT_BRANCH"
 pnpm lint-staged
