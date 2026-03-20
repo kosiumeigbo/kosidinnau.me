@@ -45,12 +45,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <Container className="max-w-[45rem] text-sm">
         <h1>{title}</h1>
         <div className="pb-2 text-right text-xs italic sm:text-sm">
-          First published {dateOriginallyPublishedDateString}
+          Originally published {dateOriginallyPublishedDateString}
         </div>
         {dateModifiedDateString !== dateOriginallyPublishedDateString ? (
-          <div className="pb-2 text-right text-xs italic sm:text-sm">
-            Content last modified {dateModifiedDateString}
-          </div>
+          <div className="pb-2 text-right text-xs italic sm:text-sm">Last published {dateModifiedDateString}</div>
         ) : null}
         <div className="flex flex-wrap gap-1">
           {tags.map((tag, i) => (
