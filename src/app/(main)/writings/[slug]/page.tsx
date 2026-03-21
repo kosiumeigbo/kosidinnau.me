@@ -48,7 +48,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           Originally published {dateOriginallyPublishedDateString}
         </div>
         {dateModifiedDateString !== dateOriginallyPublishedDateString ? (
-          <div className="pb-2 text-right text-xs italic sm:text-sm">Last published {dateModifiedDateString}</div>
+          <div className="pb-2 text-right text-xs italic sm:text-sm">Last edited {dateModifiedDateString}</div>
         ) : null}
         <div className="flex flex-wrap gap-1">
           {tags.map((tag, i) => (
