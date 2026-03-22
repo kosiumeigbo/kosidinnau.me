@@ -1,5 +1,6 @@
 import { getSlugsForAllWritings, getValueFromFrontMatterKey } from "./helpers";
-import { FrontMatterObjectType, allFrontMatterKeys, dateOriginallyPublished, dateModified } from "@/lib/types";
+import { FrontMatterObjectType } from "@/lib/types";
+import { allFrontMatterKeys, dateOriginallyPublished, dateModified } from "~/shared/constants";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
