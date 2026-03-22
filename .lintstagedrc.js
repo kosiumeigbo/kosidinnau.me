@@ -15,9 +15,11 @@ const printOutFile = async (filenames) => {
       crlfDelay: Infinity,
     });
 
-    // const { stdout } = await exec(`sed -n 1p ${file}`);
-    const { stdout } = await exec("git status");
-    console.log(stdout);
+    const { stdout } = await exec(`sed -n 1p ${file}`);
+    if (stdout.trim() !== "---") {
+      console.log(`Invalid frontmatter found in '${file}'`);
+      process.exit(1);
+    }
 
     /* const frontMatter = [];
     let endOfFrontmatter = 0;
@@ -29,6 +31,7 @@ const printOutFile = async (filenames) => {
       console.log(line);
     } */
   }
+  console.log("This was successful. Just putting is unsuccessful for dev purposes!");
   process.exit(0);
 };
 
