@@ -82,7 +82,7 @@ const printOutFile = async (filenames) => {
 
       const newDateModified = new Date();
       const yearString = newDateModified.getFullYear().toString();
-      const monthString = (newDateModified.getMonth() + 2).toString();
+      const monthString = (newDateModified.getMonth() + 1).toString();
       const dayString = newDateModified.getDate().toString();
 
       const sedCommand = `sed -i '' '${lineNumberOfDateModified}c\\\n${dateModified}: ${yearString}-${monthString}-${dayString}\n' ${file}`;
@@ -99,8 +99,7 @@ const printOutFile = async (filenames) => {
         const dayString = newDateModified.getDate().toString();
         const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateModified}: ${yearString}-${monthString}-${dayString}\n' ${file}`;
         await exec(sedCommand);
-        await exec("git add .");
-        await exec(`git commit -m "chore: added ${dateModified} in file"`);
+        await exec(`git add ${file}`);
       } else {
         console.log("grep has failed!");
         process.exit(1);
