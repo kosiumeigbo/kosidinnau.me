@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const readline = require("node:readline");
 const { promisify } = require("node:util");
 const child_process = require("node:child_process");
-const { requiredPropKeys } = require("./shared/constants");
+const { requiredPropKeys, dateModified } = require("./shared/constants");
 
 const exec = promisify(child_process.exec);
 
@@ -37,7 +37,7 @@ const printOutFile = async (filenames) => {
     fullFrontMatterArray.pop();
     fullFrontMatterArray.shift();
     const frontMatter = fullFrontMatterArray.map((str) => str.trim());
-    console.log(frontMatter);
+    // console.log(frontMatter);
 
     // Front matter should only contain values in requiredProps
     frontMatter.forEach((str) => {
@@ -65,6 +65,20 @@ const printOutFile = async (filenames) => {
     if (!allRequiredPropsInFrontMatter) {
       console.log(`Invalid frontmatter found in '${file}': Incomplete required props`);
       process.exit(1);
+    }
+
+    const { stdout: stdout4, stderr: stderr4 } = await exec(`grep -n '${dateModified}' ${file}`);
+    console.log("Std444", stdout4);
+    console.log("stderr for dateModified", stderr4);
+    if (stdout4.trim() === "") {
+      const newDateModified = new Date();
+      const yearString = newDateModified.getFullYear().toString();
+      const monthString = (newDateModified.getMonth() + 1).toString();
+      const dayString = newDateModified.getDate().toString();
+      await exec(
+        `sed -i -n '' '${frontMatterEndLineNumber}i ${dateModified}: ${yearString}-${monthString}-${dayString}'`,
+      );
+      await exec("git add .");
     }
 
     // Loop till the second '---' is found
