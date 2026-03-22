@@ -2,6 +2,8 @@ const fs = require("node:fs");
 const readline = require("node:readline");
 const { promisify } = require("node:util");
 const child_process = require("node:child_process");
+const { requiredPropKeys } = require("./shared/constants");
+
 const exec = promisify(child_process.exec);
 
 const eslintCommand = (filenames) => `eslint ${filenames.join(" ")}`;
@@ -36,6 +38,14 @@ const printOutFile = async (filenames) => {
     fullFrontMatterArray.shift();
     const frontMatter = fullFrontMatterArray.map((str) => str.trim());
     console.log(frontMatter);
+
+    frontMatter.forEach((str) => {
+      const key = str.split(":")[0].trim();
+      if (!requiredPropKeys.includes(key)) {
+        console.log(`Invalid frontmatter found in '${file}': Invalid prop ${key}`);
+        process.exit(1);
+      }
+    });
 
     // Loop till the second '---' is found
     // Add the front matter lines to an array and stop when the second '---' is found
