@@ -62,11 +62,21 @@ const printOutFile = async (filenames) => {
       return prop;
     });
 
+    const frontMatterPropValues = frontMatterLinesParsed.map(([_, values]) => {
+      return values.join(":");
+    });
+
     const allRequiredPropsInFrontMatter = requiredPropKeys.every((item) => {
       return frontMatterProps.includes(item);
     });
     if (!allRequiredPropsInFrontMatter) {
       console.log(`Invalid frontmatter found in '${file}': Incomplete required props`);
+      process.exit(1);
+    }
+
+    const hasInvalidPropValue = frontMatterPropValues.some((val) => val.trim() === "");
+    if (hasInvalidPropValue) {
+      console.log(`Invalid frontmatter found in '${file}': Empty prop value found`);
       process.exit(1);
     }
 
