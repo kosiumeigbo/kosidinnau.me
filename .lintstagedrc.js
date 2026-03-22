@@ -21,6 +21,13 @@ const printOutFile = async (filenames) => {
       process.exit(1);
     }
 
+    // Loop till the second '---' is found
+    // Add the front matter lines to an array and stop when the second '---' is found
+    // Check if there is existing title, description and tags. If any one is absent, stop the process
+    // Check if dateModified exists.
+    //    If it doesn't add a new line below the first '---' with the format with a new Date
+    //    If it exists, find the line using sed and then edit the whole line with the format with a new Date
+
     /* const frontMatter = [];
     let endOfFrontmatter = 0;
 
@@ -38,5 +45,5 @@ const printOutFile = async (filenames) => {
 module.exports = {
   "*.{js,jsx,ts,tsx,html,css}": ["prettier --write"],
   "src/**/*.{js,jsx,ts,tsx}": [eslintCommand],
-  "script_test_file.txt": [printOutFile],
+  "writings/*.html": [printOutFile],
 };
