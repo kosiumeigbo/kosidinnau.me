@@ -57,6 +57,15 @@ const printOutFile = async (filenames) => {
       }
     });
 
+    const allRequiredPropsInFrontMatter = frontMatter.every((item) => {
+      const key = item.split(":")[0].trim();
+      return requiredPropKeys.includes(key);
+    });
+    if (!allRequiredPropsInFrontMatter) {
+      console.log(`Invalid frontmatter found in '${file}': Incomplete required props`);
+      process.exit(1);
+    }
+
     // Loop till the second '---' is found
     // Add the front matter lines to an array and stop when the second '---' is found
     // Check if there is existing title, description and tags. If any one is absent, stop the process
