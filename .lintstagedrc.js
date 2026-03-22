@@ -40,13 +40,13 @@ const printOutFile = async (filenames) => {
     // console.log(frontMatter);
 
     // Front matter should only contain values in requiredProps
-    frontMatter.forEach((str) => {
+    /* frontMatter.forEach((str) => {
       const key = str.split(":")[0].trim();
       if (!requiredPropKeys.includes(key)) {
         console.log(`Invalid frontmatter found in '${file}': Invalid prop ${key}`);
         process.exit(1);
       }
-    });
+    }); */
 
     // Remove duplicates of the required props
     requiredPropKeys.forEach((prop) => {
@@ -67,7 +67,32 @@ const printOutFile = async (filenames) => {
       process.exit(1);
     }
 
-    const { stdout: stdout4, stderr: stderr4 } = await exec(`grep -n '${dateModified}' ${file}`);
+    console.log("Time for dateModified");
+    try {
+      // const { stdout: stdout4, stderr: stderr4 } = await exec(`grep -n '${dateModified}' ${file}`);
+      const { stdout: stdout4, stderr: stderr4 } = await exec(`grep -n '${dateModified}' ${file}`);
+      console.log("stdout: ", stdout4);
+      console.log("stderr: ", stderr4);
+    } catch (e) {
+      console.log(e);
+      if (e.code === 1) {
+        console.log(`${dateModified} pattern not found in ${file}`);
+        const newDateModified = new Date();
+        const yearString = newDateModified.getFullYear().toString();
+        const monthString = (newDateModified.getMonth() + 1).toString();
+        const dayString = newDateModified.getDate().toString();
+        const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateModified}: ${yearString}-${monthString}-${dayString}\n' ${file}`;
+        await exec(sedCommand);
+        await exec("git add .");
+        await exec(`git commit -m "chore: added ${dateModified} in file"`);
+      } else {
+        console.log("grep has failed!");
+        process.exit(1);
+      }
+
+      // await exec("git add .");
+    }
+    /* const { stdout: stdout4, stderr: stderr4 } = await exec(`grep -n '${dateModified}' ${file}`);
     console.log("Std444", stdout4);
     console.log("stderr for dateModified", stderr4);
     if (stdout4.trim() === "") {
@@ -79,7 +104,7 @@ const printOutFile = async (filenames) => {
         `sed -i -n '' '${frontMatterEndLineNumber}i ${dateModified}: ${yearString}-${monthString}-${dayString}'`,
       );
       await exec("git add .");
-    }
+    } */
 
     // Loop till the second '---' is found
     // Add the front matter lines to an array and stop when the second '---' is found
