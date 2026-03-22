@@ -1,7 +1,8 @@
-// import fs from "node:fs";
 const fs = require("node:fs");
 const readline = require("node:readline");
-// import readline from "node:readline";
+const { promisify } = require("node:util");
+const child_process = require("node:child_process");
+const exec = promisify(child_process.exec);
 
 const eslintCommand = (filenames) => `eslint ${filenames.join(" ")}`;
 
@@ -14,10 +15,19 @@ const printOutFile = async (filenames) => {
       crlfDelay: Infinity,
     });
 
-    // const lines = [];
-    for await (const line of rl) {
+    // const { stdout } = await exec(`sed -n 1p ${file}`);
+    const { stdout } = await exec("git status");
+    console.log(stdout);
+
+    /* const frontMatter = [];
+    let endOfFrontmatter = 0;
+
+    for await (const [i, line] of rl) {
+      if (i === 0 && line.trim() !== "---") {
+        process.exit(1);
+      }
       console.log(line);
-    }
+    } */
   }
   process.exit(0);
 };
