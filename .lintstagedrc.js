@@ -15,11 +15,27 @@ const printOutFile = async (filenames) => {
       crlfDelay: Infinity,
     });
 
-    const { stdout } = await exec(`sed -n 1p ${file}`);
-    if (stdout.trim() !== "---") {
+    const { stdout: stdout1 } = await exec(`sed -n 1p ${file}`);
+    if (stdout1.trim() !== "---") {
       console.log(`Invalid frontmatter found in '${file}'`);
       process.exit(1);
     }
+
+    const { stdout: stdout2 } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
+    if (stdout2.trim() === "") {
+      console.log(`Invalid frontmatter found in '${file}'`);
+      process.exit(1);
+    }
+
+    const frontMatterEndLineNumber = Number(stdout2.trim().split(":")[0]);
+
+    const { stdout: stdout3 } = await exec(`sed -n '1,${frontMatterEndLineNumber}p' ${file}`);
+    const fullFrontMatterArray = stdout3.split("\n");
+    fullFrontMatterArray.pop();
+    fullFrontMatterArray.pop();
+    fullFrontMatterArray.shift();
+    const frontMatter = fullFrontMatterArray.map((str) => str.trim());
+    console.log(frontMatter);
 
     // Loop till the second '---' is found
     // Add the front matter lines to an array and stop when the second '---' is found
