@@ -43,16 +43,6 @@ const printOutFile = async (filenames) => {
     // Check if dateModified exists.
     //    If it doesn't add a new line below the first '---' with the format with a new Date
     //    If it exists, find the line using sed and then edit the whole line with the format with a new Date
-
-    /* const frontMatter = [];
-    let endOfFrontmatter = 0;
-
-    for await (const [i, line] of rl) {
-      if (i === 0 && line.trim() !== "---") {
-        process.exit(1);
-      }
-      console.log(line);
-    } */
   }
   console.log("This was successful. Just putting is unsuccessful for dev purposes!");
   process.exit(0);
