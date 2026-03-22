@@ -39,10 +39,20 @@ const printOutFile = async (filenames) => {
     const frontMatter = fullFrontMatterArray.map((str) => str.trim());
     console.log(frontMatter);
 
+    // Front matter should only contain values in requiredProps
     frontMatter.forEach((str) => {
       const key = str.split(":")[0].trim();
       if (!requiredPropKeys.includes(key)) {
         console.log(`Invalid frontmatter found in '${file}': Invalid prop ${key}`);
+        process.exit(1);
+      }
+    });
+
+    // Remove duplicates of the required props
+    requiredPropKeys.forEach((prop) => {
+      const repeatedProp = frontMatter.filter((str) => str.split(":")[0].trim() === prop);
+      if (repeatedProp.length > 1) {
+        console.log(`Invalid frontmatter found in '${file}': Multiple '${prop}' props found`);
         process.exit(1);
       }
     });
