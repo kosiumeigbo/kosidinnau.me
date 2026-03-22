@@ -89,7 +89,7 @@ const printOutFile = async (filenames) => {
       console.log(sedCommand);
       await exec(sedCommand);
       await exec(`git add ${file}`);
-      await exec(`git commit -m "chore: added ${dateModified} in file"`);
+      // await exec(`git commit -m "chore: added ${dateModified} in file"`);
     } catch (e) {
       if (e.code === 1) {
         console.log(`${dateModified} pattern not found in ${file}`);
