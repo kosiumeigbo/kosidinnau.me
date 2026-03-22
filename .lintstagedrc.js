@@ -37,16 +37,6 @@ const printOutFile = async (filenames) => {
     fullFrontMatterArray.pop();
     fullFrontMatterArray.shift();
     const frontMatter = fullFrontMatterArray.map((str) => str.trim());
-    // console.log(frontMatter);
-
-    // Front matter should only contain values in requiredProps
-    /* frontMatter.forEach((str) => {
-      const key = str.split(":")[0].trim();
-      if (!requiredPropKeys.includes(key)) {
-        console.log(`Invalid frontmatter found in '${file}': Invalid prop ${key}`);
-        process.exit(1);
-      }
-    }); */
 
     // Remove duplicates of the required props
     requiredPropKeys.forEach((prop) => {
@@ -58,7 +48,20 @@ const printOutFile = async (filenames) => {
     });
 
     // Ensure the front matter of the file has all required props
-    const frontMatterProps = frontMatter.map((item) => item.split(":")[0].trim());
+    // const frontMatterProps = frontMatter.map((item) => item.split(":")[0].trim());
+
+    // @ts-check
+    /** @type {[string, string[]][]} */
+    const frontMatterLinesParsed = frontMatter.map((item) => {
+      const [prop, ...value] = item.split(":");
+      const trimmedProp = prop.trim();
+      return [trimmedProp, value];
+    });
+
+    const frontMatterProps = frontMatterLinesParsed.map(([prop, _]) => {
+      return prop;
+    });
+
     const allRequiredPropsInFrontMatter = requiredPropKeys.every((item) => {
       return frontMatterProps.includes(item);
     });
@@ -92,10 +95,12 @@ const printOutFile = async (filenames) => {
     } catch (e) {
       if (e.code === 1) {
         console.log(`${dateModified} pattern not found in ${file}`);
+
         const newDateModified = new Date();
         const yearString = newDateModified.getFullYear().toString();
         const monthString = (newDateModified.getMonth() + 1).toString();
         const dayString = newDateModified.getDate().toString();
+
         const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateModified}: ${yearString}-${monthString}-${dayString}\n' ${file}`;
         await exec(sedCommand);
         await exec(`git add ${file}`);
