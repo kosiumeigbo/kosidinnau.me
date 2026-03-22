@@ -57,9 +57,10 @@ const printOutFile = async (filenames) => {
       }
     });
 
-    const allRequiredPropsInFrontMatter = frontMatter.every((item) => {
-      const key = item.split(":")[0].trim();
-      return requiredPropKeys.includes(key);
+    // Ensure the front matter of the file has all required props
+    const frontMatterProps = frontMatter.map((item) => item.split(":")[0].trim());
+    const allRequiredPropsInFrontMatter = requiredPropKeys.every((item) => {
+      return frontMatterProps.includes(item);
     });
     if (!allRequiredPropsInFrontMatter) {
       console.log(`Invalid frontmatter found in '${file}': Incomplete required props`);
