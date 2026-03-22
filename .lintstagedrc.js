@@ -82,7 +82,7 @@ const printOutFile = async (filenames) => {
 
       const newDateModified = new Date();
       const yearString = newDateModified.getFullYear().toString();
-      const monthString = (newDateModified.getMonth() + 1).toString();
+      const monthString = (newDateModified.getMonth() + 2).toString();
       const dayString = newDateModified.getDate().toString();
 
       const sedCommand = `sed -i '' '${lineNumberOfDateModified}c\\\n${dateModified}: ${yearString}-${monthString}-${dayString}\n' ${file}`;
