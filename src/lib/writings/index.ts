@@ -62,8 +62,6 @@ export const getMetaDataForSingleFileInWritings = async function (slug: string) 
     }
   }
 
-  console.log("FrontMatterArray: ", frontMatterArray);
-
   const htmlContent = lines.join("");
 
   const documentFrontMatterValuesObject = Object.fromEntries(
@@ -75,8 +73,6 @@ export const getMetaDataForSingleFileInWritings = async function (slug: string) 
     htmlContent,
     slug,
   };
-
-  console.log(metaDataForFileInWritings);
 
   return metaDataForFileInWritings;
 };

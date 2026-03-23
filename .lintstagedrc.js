@@ -82,16 +82,13 @@ const printOutFile = async (filenames) => {
 
     try {
       const { stdout: stdout4 } = await exec(`grep -n '${dateModified}' ${file}`);
-      console.log("stdout: ", stdout4);
       const dateModifiedLines = stdout4.split("\n");
       dateModifiedLines.pop();
-      console.log(dateModifiedLines);
       if (dateModifiedLines.length > 1) {
         console.log(`Invalid frontmatter found in '${file}': Multiple '${dateModified}' props found`);
         process.exit(1);
       }
       const lineNumberOfDateModified = dateModifiedLines[0].split(":")[0];
-      console.log(lineNumberOfDateModified);
 
       const newDateModified = new Date();
       const yearString = newDateModified.getFullYear().toString();
@@ -99,7 +96,6 @@ const printOutFile = async (filenames) => {
       const dayString = newDateModified.getDate().toString();
 
       const sedCommand = `sed -i '' '${lineNumberOfDateModified}c\\\n${dateModified}: ${yearString}-${monthString}-${dayString}\n' ${file}`;
-      console.log(sedCommand);
       await exec(sedCommand);
       await exec(`git add ${file}`);
     } catch (e) {
