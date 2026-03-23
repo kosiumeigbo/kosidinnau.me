@@ -99,6 +99,7 @@ const printOutFile = async (filenames) => {
       await exec(sedCommand);
       await exec(`git add ${file}`);
     } catch (e) {
+      console.log(e);
       if (e.code === 1) {
         console.log(`${dateModified} pattern not found in ${file}`);
 
