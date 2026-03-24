@@ -85,10 +85,26 @@ const printOutFile = async (filenames) => {
     // if it is in main and doesn't have a dateOriginallyPublished, add the dateOriginallyPublished just above the second '---'
     // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
 
-    /* try {
-      const fullFileInMain = await exec()
-    } catch (e) {} */
-    console.log(file.split("/").pop());
+    try {
+      const { stdout: stdout5 } = await exec(`git show main:writings/${file.split("/").pop()}`);
+    } catch (e) {
+      if (e.code === 128) {
+        console.log(`${file} not found in main branch`);
+        console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
+
+        const newDateModified = new Date();
+        const yearString = newDateModified.getFullYear().toString();
+        const monthString = (newDateModified.getMonth() + 1).toString();
+        const dayString = newDateModified.getDate().toString();
+
+        const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOriginallyPublished}: ${yearString}-${monthString}-${dayString}\n' ${file}`;
+        await exec(sedCommand);
+        await exec(`git add ${file}`);
+      } else {
+        console.log("'git show' has failed!");
+        process.exit(1);
+      }
+    }
 
     try {
       const { stdout: stdout4 } = await exec(`grep -n '${dateModified}' ${file}`);
@@ -112,7 +128,7 @@ const printOutFile = async (filenames) => {
       console.log(e);
       if (e.code === 1) {
         console.log(`${dateModified} pattern not found in ${file}`);
-        console.log(`Adding a dateModified to ${file}...`);
+        console.log(`Adding a ${dateModified} to ${file}...`);
 
         const newDateModified = new Date();
         const yearString = newDateModified.getFullYear().toString();
