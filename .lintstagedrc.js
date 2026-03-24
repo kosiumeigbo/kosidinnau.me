@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const readline = require("node:readline");
 const { promisify } = require("node:util");
 const child_process = require("node:child_process");
-const { requiredPropKeys, dateModified } = require("./shared/constants");
+const { requiredPropKeys, dateModified, dateOriginallyPublished } = require("./shared/constants");
 
 const exec = promisify(child_process.exec);
 
@@ -80,6 +80,16 @@ const printOutFile = async (filenames) => {
       process.exit(1);
     }
 
+    // find out if the file is in main
+    // if it is in main, it probably has a dateOriginallyPublished. change the non-main branch file to make sure the dateOriginallyPublished did not change
+    // if it is in main and doesn't have a dateOriginallyPublished, add the dateOriginallyPublished just above the second '---'
+    // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
+
+    /* try {
+      const fullFileInMain = await exec()
+    } catch (e) {} */
+    console.log(file.split("/").pop());
+
     try {
       const { stdout: stdout4 } = await exec(`grep -n '${dateModified}' ${file}`);
       const dateModifiedLines = stdout4.split("\n");
@@ -102,6 +112,7 @@ const printOutFile = async (filenames) => {
       console.log(e);
       if (e.code === 1) {
         console.log(`${dateModified} pattern not found in ${file}`);
+        console.log(`Adding a dateModified to ${file}...`);
 
         const newDateModified = new Date();
         const yearString = newDateModified.getFullYear().toString();
