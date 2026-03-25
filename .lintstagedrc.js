@@ -1,22 +1,9 @@
-const fs = require("node:fs");
-const readline = require("node:readline");
-const { promisify } = require("node:util");
-const child_process = require("node:child_process");
-// const { writingPreCommitFunction } = require("./shared");
-
-const exec = promisify(child_process.exec);
+const { writingPreCommitFunction } = require("./shared/utils");
 
 const eslintCommand = (filenames) => `eslint ${filenames.join(" ")}`;
 
 const printOutFile = async (filenames) => {
   for await (const file of filenames) {
-    /* const fileStream = fs.createReadStream(file);
-
-    const rl = readline.createInterface({
-      input: fileStream,
-      crlfDelay: Infinity,
-    }); */
-
     await writingPreCommitFunction(file);
     console.log(file);
   }

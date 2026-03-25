@@ -1,11 +1,13 @@
 // @ts-check
+// import { promisify } from "node:util";
+// import child_process from "node:child_process";
+// import { requiredPropKeys, dateModified, dateOriginallyPublished } from "./index";
 const { promisify } = require("node:util");
 const child_process = require("node:child_process");
-const { requiredPropKeys, dateModified, dateOriginallyPublished } = require("./index");
-const exec = promisify(child_process.exec);
+const { requiredPropKeys, dateModified, dateOriginallyPublished } = require("./constants");
 
 /** @return {string} */
-export const getNewDateFormatted = function () {
+const getNewDateFormatted = function () {
   const newDatePublished = new Date();
   const yearString = newDatePublished.getFullYear().toString();
   const monthString = (newDatePublished.getMonth() + 1).toString();
@@ -17,7 +19,8 @@ export const getNewDateFormatted = function () {
  * @param {string} file
  * @returns {Promise<void>}
  */
-export const writingPreCommitFunction = async function (file) {
+const writingPreCommitFunction = async function (file) {
+  const exec = promisify(child_process.exec);
   const { stdout: stdout1 } = await exec(`sed -n 1p ${file}`);
   if (stdout1.trim() !== "---") {
     console.log(`Invalid frontmatter found in '${file}'`);
@@ -155,4 +158,9 @@ export const writingPreCommitFunction = async function (file) {
   // Check if dateModified exists.
   //    If it doesn't add a new line below the first '---' with the format with a new Date
   //    If it exists, find the line using sed and then edit the whole line with the format with a new Date
+};
+
+module.exports = {
+  getNewDateFormatted,
+  writingPreCommitFunction,
 };
