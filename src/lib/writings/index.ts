@@ -1,6 +1,6 @@
 import { getSlugsForAllWritings, getValueFromFrontMatterKey } from "./helpers";
 import { FrontMatterObjectType } from "@/lib/types";
-import { allFrontMatterKeys, dateOriginallyPublished, dateModified } from "~/shared/constants";
+import { allFrontMatterKeys, dateOriginallyPublished, dateModified, getNewDateFormatted } from "~/shared";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
@@ -44,21 +44,13 @@ export const getMetaDataForSingleFileInWritings = async function (slug: string) 
     );
 
     if (!dateOriginallyPublishedFrontMatterLine) {
-      const newDatePublished = new Date();
-      const yearString = newDatePublished.getFullYear().toString();
-      const monthString = (newDatePublished.getMonth() + 1).toString();
-      const dayString = newDatePublished.getDate().toString();
-      frontMatterArray.push(`${dateOriginallyPublished}: ${yearString}-${monthString}-${dayString}`);
+      frontMatterArray.push(`${dateOriginallyPublished}: ${getNewDateFormatted()}`);
     }
 
     const dateModifiedFrontMatterLine = frontMatterArray.find((str) => str.split(":")[0].trim() === dateModified);
 
     if (!dateModifiedFrontMatterLine) {
-      const newDateModified = new Date();
-      const yearString = newDateModified.getFullYear().toString();
-      const monthString = (newDateModified.getMonth() + 1).toString();
-      const dayString = newDateModified.getDate().toString();
-      frontMatterArray.push(`${dateModified}: ${yearString}-${monthString}-${dayString}`);
+      frontMatterArray.push(`${dateModified}: ${getNewDateFormatted()}`);
     }
   }
 
