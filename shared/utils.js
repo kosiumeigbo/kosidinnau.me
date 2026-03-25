@@ -88,6 +88,7 @@ const writingPreCommitFunction = async function (file) {
   // @ts-ignore: This will always run for a file in the writings directory in the root
   const fileNameWithoutExtension = fileNameWithoutDirectory.split(".").unshift();
   const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
+  console.log(fileNameWithoutDirectory, fileNameWithoutExtension, tempFile);
 
   try {
     await exec(`git show main:writings/${fileNameWithoutDirectory} > ${tempFile}`);
