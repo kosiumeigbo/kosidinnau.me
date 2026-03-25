@@ -30,7 +30,7 @@ const writingPreCommitFunction = async function (file) {
     process.exit(1);
   }
 
-  const frontMatterEndLineNumber = Number(stdout2.trim().split(":")[0]);
+  const frontMatterEndLineNumber = Number(stdout2.trim().split(":")[0].trim());
 
   const { stdout: stdout3 } = await exec(`sed -n '1,${frontMatterEndLineNumber}p' ${file}`);
   const fullFrontMatterArray = stdout3.split("\n");
@@ -84,13 +84,12 @@ const writingPreCommitFunction = async function (file) {
   // if it is in main, it probably has a dateOriginallyPublished. change the non-main branch file to make sure the dateOriginallyPublished did not change
   // if it is in main and doesn't have a dateOriginallyPublished, add the dateOriginallyPublished just above the second '---'
   // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
+  const fileNameWithoutDirectory = file.split("/").pop();
+  // @ts-ignore: This will always run for a file in the writings directory in the root
+  const fileNameWithoutExtension = fileNameWithoutDirectory.split(".").unshift();
+  const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
 
   try {
-    const fileNameWithoutDirectory = file.split("/").pop();
-    // @ts-ignore: This will always run for a file in the writings directory in the root
-    const fileNameWithoutExtension = fileNameWithoutDirectory.split(".").unshift();
-    const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
-
     await exec(`git show main:writings/${fileNameWithoutDirectory} > ${tempFile}`);
 
     const { stdout: stdout5 } = await exec(`grep '${dateOriginallyPublished}' ${tempFile} | sed -n 1p`);
@@ -119,6 +118,8 @@ const writingPreCommitFunction = async function (file) {
       console.log("'git show' has failed!");
       process.exit(1);
     }
+  } finally {
+    // await exec(`rm -f ${tempFile}`);
   }
 
   try {
@@ -136,12 +137,14 @@ const writingPreCommitFunction = async function (file) {
     await exec(`git add ${file}`);
   } catch (e) {
     console.log(e);
+    const { stdout: stdout7 } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
+    const updatedFrontMatterEndLineNumber = Number(stdout7.trim().split(":")[0].trim());
     // @ts-ignore
     if (e.code === 1) {
       console.log(`${dateModified} pattern not found in ${file}`);
       console.log(`Adding a ${dateModified} to ${file}...`);
 
-      const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
+      const sedCommand = `sed -i '' '${updatedFrontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
       await exec(sedCommand);
       await exec(`git add ${file}`);
     } else {
