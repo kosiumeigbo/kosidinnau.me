@@ -84,7 +84,10 @@ const writingPreCommitFunction = async function (file) {
   // if it is in main, it probably has a dateOriginallyPublished. change the non-main branch file to make sure the dateOriginallyPublished did not change
   // if it is in main and doesn't have a dateOriginallyPublished, add the dateOriginallyPublished just above the second '---'
   // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
-  const fileNameWithoutDirectory = file.split("/").pop();
+
+  const splitFile = file.split("/");
+  console.log(splitFile);
+  const fileNameWithoutDirectory = splitFile.pop();
   // @ts-ignore: This will always run for a file in the writings directory in the root
   const fileNameWithoutExtension = fileNameWithoutDirectory.split(".").unshift();
   const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
