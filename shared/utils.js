@@ -86,10 +86,9 @@ const writingPreCommitFunction = async function (file) {
   // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
 
   const splitFile = file.split("/");
-  console.log(splitFile);
   const fileNameWithoutDirectory = splitFile.pop();
   // @ts-ignore: This will always run for a file in the writings directory in the root
-  const fileNameWithoutExtension = fileNameWithoutDirectory.split(".").unshift();
+  const fileNameWithoutExtension = fileNameWithoutDirectory.split(".")[0];
   const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
   console.log(fileNameWithoutDirectory, fileNameWithoutExtension, tempFile);
 
@@ -123,7 +122,7 @@ const writingPreCommitFunction = async function (file) {
       process.exit(1);
     }
   } finally {
-    // await exec(`rm -f ${tempFile}`);
+    await exec(`rm -f ${tempFile}`);
   }
 
   try {
