@@ -17,7 +17,7 @@ const printOutFile = async (filenames) => {
       crlfDelay: Infinity,
     }); */
 
-    // await writingPreCommitFunction(file);
+    await writingPreCommitFunction(file);
     console.log(file);
   }
   console.log("This was successful. Just putting is unsuccessful for dev purposes!");

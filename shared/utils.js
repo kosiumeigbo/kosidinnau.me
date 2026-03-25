@@ -1,7 +1,7 @@
 // @ts-check
 const { promisify } = require("node:util");
 const child_process = require("node:child_process");
-const { requiredPropKeys, dateModified, dateOriginallyPublished } = require("./");
+const { requiredPropKeys, dateModified, dateOriginallyPublished } = require("./index");
 const exec = promisify(child_process.exec);
 
 /** @return {string} */
