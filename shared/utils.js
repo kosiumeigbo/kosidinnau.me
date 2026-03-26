@@ -91,12 +91,12 @@ const writingPreCommitFunction = async function (file) {
   const fileNameWithoutExtension = fileNameWithoutDirectory.split(".")[0];
   const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
   console.log(fileNameWithoutDirectory, fileNameWithoutExtension, tempFile);
+  const { stdout: stdout6 } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
 
   try {
     await exec(`git show main:writings/${fileNameWithoutDirectory} > ${tempFile}`);
 
     const { stdout: stdout5 } = await exec(`grep '${dateOriginallyPublished}' ${tempFile} | sed -n 1p`);
-    const { stdout: stdout6 } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
     if (stdout6.trim() === "") {
       console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
       const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${stdout5}' ${file}`;
@@ -111,12 +111,23 @@ const writingPreCommitFunction = async function (file) {
   } catch (e) {
     // @ts-ignore
     if (e.code === 128) {
-      console.log(`${file} not found in main branch`);
-      console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
+      if (stdout6.trim() === "") {
+        console.log(`${file} not found in main branch`);
+        console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
 
-      const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
-      await exec(sedCommand);
-      await exec(`git add ${file}`);
+        const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
+        await exec(sedCommand);
+        await exec(`git add ${file}`);
+      } else {
+        console.log(`${file} not found in main branch`);
+        console.log(`Modifying existing ${dateOriginallyPublished} in ${file}...`);
+
+        const lineNumberOfDateOriginallyPublished = stdout6.split(":")[0];
+        
+        const sedCommand = `sed -i '' '${lineNumberOfDateOriginallyPublished}c\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
+        await exec(sedCommand);
+        await exec(`git add ${file}`);
+      }
     } else {
       console.log("'git show' has failed!");
       process.exit(1);
