@@ -17,6 +17,11 @@ const getNewDateFormatted = function () {
  * @returns {Promise<void>}
  */
 const writingPreCommitFunction = async function (file) {
+  const fileNameWithoutDirectory = file.split("/").pop();
+  // @ts-ignore: This will always run for a file in the writings directory in the root
+  const fileNameWithoutExtension = fileNameWithoutDirectory.split(".")[0];
+  const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
+
   const exec = promisify(child_process.exec);
   const { stdout: stdout1 } = await exec(`sed -n 1p ${file}`);
   if (stdout1.trim() !== "---") {
@@ -85,12 +90,11 @@ const writingPreCommitFunction = async function (file) {
   // if it is in main and doesn't have a dateOriginallyPublished, add the dateOriginallyPublished just above the second '---'
   // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
 
-  const splitFile = file.split("/");
-  const fileNameWithoutDirectory = splitFile.pop();
-  // @ts-ignore: This will always run for a file in the writings directory in the root
-  const fileNameWithoutExtension = fileNameWithoutDirectory.split(".")[0];
-  const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
-  console.log(fileNameWithoutDirectory, fileNameWithoutExtension, tempFile);
+  const { stdout: stdout7 } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 2p`);
+  if (stdout7.trim() !== "") {
+    console.log(`Invalid frontmatter found in '${file}': Multiple '${dateOriginallyPublished}' props found`);
+    process.exit(1);
+  }
   const { stdout: stdout6 } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
 
   try {
