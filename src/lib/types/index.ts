@@ -1,4 +1,4 @@
-import { allFrontMatterKeys } from "~/shared/constants";
+import { allFrontMatterKeys } from "~/shared";
 
 export type FrontMatterObjectType = {
   title: string;
