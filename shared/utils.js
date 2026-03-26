@@ -123,7 +123,7 @@ const writingPreCommitFunction = async function (file) {
         console.log(`Modifying existing ${dateOriginallyPublished} in ${file}...`);
 
         const lineNumberOfDateOriginallyPublished = stdout6.split(":")[0];
-        
+
         const sedCommand = `sed -i '' '${lineNumberOfDateOriginallyPublished}c\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
         await exec(sedCommand);
         await exec(`git add ${file}`);
@@ -145,6 +145,8 @@ const writingPreCommitFunction = async function (file) {
       process.exit(1);
     }
     const lineNumberOfDateModified = dateModifiedLines[0].split(":")[0];
+
+    console.log(`Modifying existing ${dateModified} in ${file}...`);
 
     const sedCommand = `sed -i '' '${lineNumberOfDateModified}c\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
     await exec(sedCommand);
