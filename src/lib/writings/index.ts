@@ -1,5 +1,6 @@
 import { getSlugsForAllWritings, getValueFromFrontMatterKey } from "./helpers";
-import { FrontMatterObjectType, allFrontMatterKeys, dateOriginallyPublished, dateModified } from "@/lib/types";
+import { FrontMatterObjectType } from "@/lib/types";
+import { allFrontMatterKeys, dateOriginallyPublished, dateModified, getNewDateFormatted } from "~/shared";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
@@ -37,28 +38,21 @@ export const getMetaDataForSingleFileInWritings = async function (slug: string) 
     .filter((str) => str.trim() !== "" && str.trim() !== "---")
     .map((str) => str.trim());
 
-  const dateOriginallyPublishedFrontMatterLine = frontMatterArray.find(
-    (str) => str.split(":")[0].trim() === dateOriginallyPublished,
-  );
+  if (process.env.NODE_ENV === "development") {
+    const dateOriginallyPublishedFrontMatterLine = frontMatterArray.find(
+      (str) => str.split(":")[0].trim() === dateOriginallyPublished,
+    );
 
-  if (!dateOriginallyPublishedFrontMatterLine) {
-    const newDatePublished = new Date();
-    const yearString = newDatePublished.getFullYear().toString();
-    const monthString = (newDatePublished.getMonth() + 1).toString();
-    const dayString = newDatePublished.getDate().toString();
-    frontMatterArray.push(`${dateOriginallyPublished}: ${yearString}-${monthString}-${dayString}`);
+    if (!dateOriginallyPublishedFrontMatterLine) {
+      frontMatterArray.push(`${dateOriginallyPublished}: ${getNewDateFormatted()}`);
+    }
+
+    const dateModifiedFrontMatterLine = frontMatterArray.find((str) => str.split(":")[0].trim() === dateModified);
+
+    if (!dateModifiedFrontMatterLine) {
+      frontMatterArray.push(`${dateModified}: ${getNewDateFormatted()}`);
+    }
   }
-
-  const dateModifiedFrontMatterLine = frontMatterArray.find((str) => str.split(":")[0].trim() === dateModified);
-
-  if (!dateModifiedFrontMatterLine) {
-    const newDateModified = new Date();
-    const yearString = newDateModified.getFullYear().toString();
-    const monthString = (newDateModified.getMonth() + 1).toString();
-    const dayString = newDateModified.getDate().toString();
-    frontMatterArray.push(`${dateModified}: ${yearString}-${monthString}-${dayString}`);
-  }
-  console.log("FrontMatterArray: ", frontMatterArray);
 
   const htmlContent = lines.join("");
 
@@ -71,8 +65,6 @@ export const getMetaDataForSingleFileInWritings = async function (slug: string) 
     htmlContent,
     slug,
   };
-
-  console.log(metaDataForFileInWritings);
 
   return metaDataForFileInWritings;
 };

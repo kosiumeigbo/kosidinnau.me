@@ -1,6 +1,4 @@
-export const allFrontMatterKeys = ["title", "description", "dateOriginallyPublished", "dateModified", "tags"] as const;
-export const dateOriginallyPublished = allFrontMatterKeys[2];
-export const dateModified = allFrontMatterKeys[3];
+import { allFrontMatterKeys } from "~/shared";
 
 export type FrontMatterObjectType = {
   title: string;
