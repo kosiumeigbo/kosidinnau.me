@@ -4,8 +4,12 @@ const eslintCommand = (filenames) => `eslint ${filenames.join(" ")}`;
 
 const printOutFile = async (filenames) => {
   for await (const file of filenames) {
-    await writingPreCommitFunction(file);
-    console.log(file);
+    try {
+      await writingPreCommitFunction(file);
+      console.log(file);
+    } catch (e) {
+      console.log(e);
+    }
   }
   console.log("This was successful. Just putting is unsuccessful for dev purposes!");
   process.exit(0);

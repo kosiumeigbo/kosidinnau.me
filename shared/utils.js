@@ -56,14 +56,20 @@ const writingPreCommitFunction = async function (file) {
   // const frontMatterProps = frontMatter.map((item) => item.split(":")[0].trim());
 
   /** @type {[string, string[]][]} */
-  const frontMatterLinesParsed = frontMatter.map((item) => {
+  const parsedFrontMatterLines = frontMatter.map((item) => {
     const [prop, ...value] = item.split(":");
     const trimmedProp = prop.trim();
     return [trimmedProp, value];
   });
 
-  const frontMatterPropValues = frontMatterLinesParsed.map(([_, values]) => {
-    return values.join(":");
+  parsedFrontMatterLines.forEach(([prop, val]) => {
+    if (val.length === 0) {
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found`);
+    } else {
+      if (val.length === 1 && val[0].trim() === "") {
+        throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found`);
+      }
+    }
   });
 
   /* const allRequiredPropsInFrontMatter = requiredPropKeys.every((item) => {
@@ -74,11 +80,11 @@ const writingPreCommitFunction = async function (file) {
     process.exit(1);
   } */
 
-  const hasInvalidPropValue = frontMatterPropValues.some((val) => val.trim() === "");
+  /* const hasInvalidPropValue = frontMatterPropValues.some((val) => val.trim() === "");
   if (hasInvalidPropValue) {
     console.log(`Invalid frontmatter found in '${file}': Empty prop value found`);
     process.exit(1);
-  }
+  } */
 
   // find out if the file is in main
   // if it is in main, it probably has a dateOriginallyPublished. change the non-main branch file to make sure the dateOriginallyPublished did not change
