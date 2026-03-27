@@ -25,12 +25,12 @@ const writingPreCommitFunction = async function (file) {
   const exec = promisify(child_process.exec);
   const { stdout: firstLineInFile } = await exec(`sed -n 1p ${file}`);
   if (firstLineInFile.trim() !== "---") {
-    throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': First line is not '---'`);
+    throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': First line is not '---'\n`);
   }
 
   const { stdout: frontMatterEndLine } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
   if (frontMatterEndLine.trim() === "") {
-    throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}'`);
+    throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}'\n`);
   }
 
   const frontMatterEndLineNumber = Number(frontMatterEndLine.trim().split(":")[0].trim());
@@ -45,16 +45,14 @@ const writingPreCommitFunction = async function (file) {
   requiredPropKeys.forEach((prop) => {
     const filteredProp = frontMatter.filter((str) => str.split(":")[0].trim() === prop);
     if (filteredProp.length > 1) {
-      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Multiple '${prop}' props found`);
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Multiple '${prop}' props found\n`);
     }
     if (filteredProp.length === 0) {
-      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': No '${prop}' prop found`);
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': No '${prop}' prop found\n`);
     }
   });
 
   // Ensure the front matter of the file has all required props
-  // const frontMatterProps = frontMatter.map((item) => item.split(":")[0].trim());
-
   /** @type {[string, string[]][]} */
   const parsedFrontMatterLines = frontMatter.map((item) => {
     const [prop, ...value] = item.split(":");
@@ -66,28 +64,14 @@ const writingPreCommitFunction = async function (file) {
     // @ts-ignore
     if (requiredPropKeys.includes(prop)) {
       if (val.length === 0) {
-        throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found`);
+        throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
       } else {
         if (val.length === 1 && val[0].trim() === "") {
-          throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found`);
+          throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
         }
       }
     }
   });
-
-  /* const allRequiredPropsInFrontMatter = requiredPropKeys.every((item) => {
-    return frontMatterProps.includes(item);
-  });
-  if (!allRequiredPropsInFrontMatter) {
-    console.log(`Invalid frontmatter found in '${file}': Incomplete required props`);
-    process.exit(1);
-  } */
-
-  /* const hasInvalidPropValue = frontMatterPropValues.some((val) => val.trim() === "");
-  if (hasInvalidPropValue) {
-    console.log(`Invalid frontmatter found in '${file}': Empty prop value found`);
-    process.exit(1);
-  } */
 
   // find out if the file is in main
   // if it is in main, it probably has a dateOriginallyPublished. change the non-main branch file to make sure the dateOriginallyPublished did not change
