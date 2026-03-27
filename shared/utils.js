@@ -73,11 +73,6 @@ const writingPreCommitFunction = async function (file) {
     }
   });
 
-  // find out if the file is in main
-  // if it is in main, it probably has a dateOriginallyPublished. change the non-main branch file to make sure the dateOriginallyPublished did not change
-  // if it is in main and doesn't have a dateOriginallyPublished, add the dateOriginallyPublished just above the second '---'
-  // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
-
   const { stdout: multiDateOrigPubl } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 2p`);
   if (multiDateOrigPubl.trim() !== "") {
     throw new Error(
@@ -85,7 +80,7 @@ const writingPreCommitFunction = async function (file) {
     );
   }
   const { stdout: dateOrigPublLineText } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
-  const dateOrigPublLineNumber = dateOrigPublLineText.split(":")[0];
+  const dateOrigPublLineNumber = Number(dateOrigPublLineText.trim().split(":")[0].trim());
 
   try {
     await exec(`git show main:writings/${fileNameWithoutDirectory} > ${tempFile}`);
@@ -130,45 +125,36 @@ const writingPreCommitFunction = async function (file) {
     await exec(`rm -f ${tempFile}`);
   }
 
+  const { stdout: multiDateModified } = await exec(`grep -n '${dateModified}' ${file} | sed -n 2p`);
+  if (multiDateModified.trim() !== "") {
+    throw new Error(
+      `Invalid frontmatter found in '${fileNameWithoutDirectory}': Multiple '${dateModified}' props found\n`,
+    );
+  }
+  const { stdout: dateModifiedLineText } = await exec(`grep -n '${dateModified}' ${file} | sed -n 1p`);
+  const dateModifiedLineNumber = Number(dateModifiedLineText.trim().split(":")[0].trim());
+  const { stdout: newFrontMatterEndLineText } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
+  const newFrontMatterEndLineNumber = Number(newFrontMatterEndLineText.trim().split(":")[0].trim());
+
   try {
-    const { stdout: stdout4 } = await exec(`grep -n '${dateModified}' ${file}`);
-    const dateModifiedLines = stdout4.split("\n");
-    dateModifiedLines.pop();
-    if (dateModifiedLines.length > 1) {
-      console.log(`Invalid frontmatter found in '${file}': Multiple '${dateModified}' props found`);
-      process.exit(1);
-    }
-    const lineNumberOfDateModified = dateModifiedLines[0].split(":")[0];
+    console.log(`Modifying existing ${dateModified} in ${fileNameWithoutDirectory}...\n`);
 
-    console.log(`Modifying existing ${dateModified} in ${file}...`);
-
-    const sedCommand = `sed -i '' '${lineNumberOfDateModified}c\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
+    const sedCommand = `sed -i '' '${dateModifiedLineNumber}c\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
     await exec(sedCommand);
     await exec(`git add ${file}`);
   } catch (e) {
-    console.log(e);
-    const { stdout: stdout7 } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
-    const updatedFrontMatterEndLineNumber = Number(stdout7.trim().split(":")[0].trim());
     // @ts-ignore
     if (e.code === 1) {
-      console.log(`${dateModified} pattern not found in ${file}`);
-      console.log(`Adding a ${dateModified} to ${file}...`);
+      console.log(`'${dateModified}' not found in ${fileNameWithoutDirectory}\n`);
+      console.log(`Adding a '${dateModified}' to ${fileNameWithoutDirectory}...\n`);
 
-      const sedCommand = `sed -i '' '${updatedFrontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
+      const sedCommand = `sed -i '' '${newFrontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
       await exec(sedCommand);
       await exec(`git add ${file}`);
     } else {
-      console.log("grep has failed!");
-      process.exit(1);
+      throw new Error("grep has failed!\n");
     }
   }
-
-  // Loop till the second '---' is found
-  // Add the front matter lines to an array and stop when the second '---' is found
-  // Check if there is existing title, description and tags. If any one is absent, stop the process
-  // Check if dateModified exists.
-  //    If it doesn't add a new line below the first '---' with the format with a new Date
-  //    If it exists, find the line using sed and then edit the whole line with the format with a new Date
 };
 
 module.exports = {
