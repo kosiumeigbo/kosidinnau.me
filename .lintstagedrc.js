@@ -8,11 +8,11 @@ const printOutFile = async (filenames) => {
       await writingPreCommitFunction(file);
       console.log(file);
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
+      console.log("This was successful. Just putting is unsuccessful for dev purposes!");
+      process.exit(0);
     }
   }
-  console.log("This was successful. Just putting is unsuccessful for dev purposes!");
-  process.exit(0);
 };
 
 module.exports = {
