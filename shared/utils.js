@@ -23,33 +23,32 @@ const writingPreCommitFunction = async function (file) {
   const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
 
   const exec = promisify(child_process.exec);
-  const { stdout: stdout1 } = await exec(`sed -n 1p ${file}`);
-  if (stdout1.trim() !== "---") {
-    console.log(`Invalid frontmatter found in '${file}'`);
-    process.exit(1);
+  const { stdout: firstLineInFile } = await exec(`sed -n 1p ${file}`);
+  if (firstLineInFile.trim() !== "---") {
+    throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': First line is not '---'`);
   }
 
-  const { stdout: stdout2 } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
-  if (stdout2.trim() === "") {
-    console.log(`Invalid frontmatter found in '${file}'`);
-    process.exit(1);
+  const { stdout: frontMatterEndLine } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
+  if (frontMatterEndLine.trim() === "") {
+    throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}'`);
   }
 
-  const frontMatterEndLineNumber = Number(stdout2.trim().split(":")[0].trim());
+  const frontMatterEndLineNumber = Number(frontMatterEndLine.trim().split(":")[0].trim());
 
-  const { stdout: stdout3 } = await exec(`sed -n '1,${frontMatterEndLineNumber}p' ${file}`);
-  const fullFrontMatterArray = stdout3.split("\n");
-  fullFrontMatterArray.pop();
-  fullFrontMatterArray.pop();
-  fullFrontMatterArray.shift();
+  const { stdout: fullFronMatterLinesText } = await exec(`sed -n '2,${frontMatterEndLineNumber - 1}p' ${file}`);
+  const fullFrontMatterArray = fullFronMatterLinesText.split("\n");
+  fullFrontMatterArray.pop(); // Remove the empty string at the end of the array
   const frontMatter = fullFrontMatterArray.map((str) => str.trim());
 
-  // Remove duplicates of the required props
+  // Check for duplicates of the required props.
+  // Also check that all required props are in the frontmatter
   requiredPropKeys.forEach((prop) => {
-    const repeatedProp = frontMatter.filter((str) => str.split(":")[0].trim() === prop);
-    if (repeatedProp.length > 1) {
-      console.log(`Invalid frontmatter found in '${file}': Multiple '${prop}' props found`);
-      process.exit(1);
+    const filteredProp = frontMatter.filter((str) => str.split(":")[0].trim() === prop);
+    if (filteredProp.length > 1) {
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Multiple '${prop}' props found`);
+    }
+    if (filteredProp.length === 0) {
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': No '${prop}' prop found`);
     }
   });
 
@@ -63,21 +62,17 @@ const writingPreCommitFunction = async function (file) {
     return [trimmedProp, value];
   });
 
-  const frontMatterProps = frontMatterLinesParsed.map(([prop, _]) => {
-    return prop;
-  });
-
   const frontMatterPropValues = frontMatterLinesParsed.map(([_, values]) => {
     return values.join(":");
   });
 
-  const allRequiredPropsInFrontMatter = requiredPropKeys.every((item) => {
+  /* const allRequiredPropsInFrontMatter = requiredPropKeys.every((item) => {
     return frontMatterProps.includes(item);
   });
   if (!allRequiredPropsInFrontMatter) {
     console.log(`Invalid frontmatter found in '${file}': Incomplete required props`);
     process.exit(1);
-  }
+  } */
 
   const hasInvalidPropValue = frontMatterPropValues.some((val) => val.trim() === "");
   if (hasInvalidPropValue) {
