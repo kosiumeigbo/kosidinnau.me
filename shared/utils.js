@@ -63,11 +63,14 @@ const writingPreCommitFunction = async function (file) {
   });
 
   parsedFrontMatterLines.forEach(([prop, val]) => {
-    if (val.length === 0) {
-      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found`);
-    } else {
-      if (val.length === 1 && val[0].trim() === "") {
+    // @ts-ignore
+    if (requiredPropKeys.includes(prop)) {
+      if (val.length === 0) {
         throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found`);
+      } else {
+        if (val.length === 1 && val[0].trim() === "") {
+          throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found`);
+        }
       }
     }
   });
@@ -97,6 +100,7 @@ const writingPreCommitFunction = async function (file) {
     process.exit(1);
   }
   const { stdout: stdout6 } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
+  console.log("stdout6:", stdout6);
 
   try {
     await exec(`git show main:writings/${fileNameWithoutDirectory} > ${tempFile}`);

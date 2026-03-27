@@ -9,10 +9,10 @@ const printOutFile = async (filenames) => {
       console.log(file);
     } catch (e) {
       console.log(e.message);
-      console.log("This was successful. Just putting is unsuccessful for dev purposes!");
-      process.exit(0);
+      process.exit(1);
     }
   }
+  process.exit(0);
 };
 
 module.exports = {
