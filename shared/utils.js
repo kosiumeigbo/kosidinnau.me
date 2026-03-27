@@ -78,33 +78,35 @@ const writingPreCommitFunction = async function (file) {
   // if it is in main and doesn't have a dateOriginallyPublished, add the dateOriginallyPublished just above the second '---'
   // if it isn't in main, then add the dateOriginallyPublished just above the second '---'
 
-  const { stdout: stdout7 } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 2p`);
-  if (stdout7.trim() !== "") {
-    console.log(`Invalid frontmatter found in '${file}': Multiple '${dateOriginallyPublished}' props found`);
-    process.exit(1);
+  const { stdout: multiDateOrigPubl } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 2p`);
+  if (multiDateOrigPubl.trim() !== "") {
+    throw new Error(
+      `Invalid frontmatter found in '${fileNameWithoutDirectory}': Multiple '${dateOriginallyPublished}' props found\n`,
+    );
   }
-  const { stdout: stdout6 } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
-  console.log("stdout6:", stdout6);
+  const { stdout: dateOrigPublLineText } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
 
   try {
     await exec(`git show main:writings/${fileNameWithoutDirectory} > ${tempFile}`);
 
-    const { stdout: stdout5 } = await exec(`grep '${dateOriginallyPublished}' ${tempFile} | sed -n 1p`);
-    if (stdout6.trim() === "") {
+    const { stdout: dateOrigPublLineTextInMain } = await exec(
+      `grep '${dateOriginallyPublished}' ${tempFile} | sed -n 1p`,
+    );
+    if (dateOrigPublLineText.trim() === "") {
       console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
-      const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${stdout5}' ${file}`;
+      const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOrigPublLineTextInMain}' ${file}`;
       await exec(sedCommand);
       await exec(`git add ${file}`);
     } else {
-      const lineNumberOfDateOriginallyPublished = stdout6.split(":")[0];
-      const sedCommand = `sed -i '' '${lineNumberOfDateOriginallyPublished}c\\\n${stdout5}' ${file}`;
+      const lineNumberOfDateOriginallyPublished = dateOrigPublLineText.split(":")[0];
+      const sedCommand = `sed -i '' '${lineNumberOfDateOriginallyPublished}c\\\n${dateOrigPublLineTextInMain}' ${file}`;
       await exec(sedCommand);
       await exec(`git add ${file}`);
     }
   } catch (e) {
     // @ts-ignore
     if (e.code === 128) {
-      if (stdout6.trim() === "") {
+      if (dateOrigPublLineText.trim() === "") {
         console.log(`${file} not found in main branch`);
         console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
 
@@ -115,7 +117,7 @@ const writingPreCommitFunction = async function (file) {
         console.log(`${file} not found in main branch`);
         console.log(`Modifying existing ${dateOriginallyPublished} in ${file}...`);
 
-        const lineNumberOfDateOriginallyPublished = stdout6.split(":")[0];
+        const lineNumberOfDateOriginallyPublished = dateOrigPublLineText.split(":")[0];
 
         const sedCommand = `sed -i '' '${lineNumberOfDateOriginallyPublished}c\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
         await exec(sedCommand);
@@ -143,7 +145,7 @@ const writingPreCommitFunction = async function (file) {
 
     const sedCommand = `sed -i '' '${lineNumberOfDateModified}c\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
     await exec(sedCommand);
-    await exec(`git add ${file}`);
+    // await exec(`git add ${file}`);
   } catch (e) {
     console.log(e);
     const { stdout: stdout7 } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
@@ -155,7 +157,7 @@ const writingPreCommitFunction = async function (file) {
 
       const sedCommand = `sed -i '' '${updatedFrontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
       await exec(sedCommand);
-      await exec(`git add ${file}`);
+      // await exec(`git add ${file}`);
     } else {
       console.log("grep has failed!");
       process.exit(1);
