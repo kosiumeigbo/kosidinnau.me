@@ -85,6 +85,7 @@ const writingPreCommitFunction = async function (file) {
     );
   }
   const { stdout: dateOrigPublLineText } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 1p`);
+  const dateOrigPublLineNumber = dateOrigPublLineText.split(":")[0];
 
   try {
     await exec(`git show main:writings/${fileNameWithoutDirectory} > ${tempFile}`);
@@ -93,39 +94,37 @@ const writingPreCommitFunction = async function (file) {
       `grep '${dateOriginallyPublished}' ${tempFile} | sed -n 1p`,
     );
     if (dateOrigPublLineText.trim() === "") {
-      console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
+      console.log(`Adding a ${dateOriginallyPublished} to ${fileNameWithoutDirectory}...\n`);
+
       const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOrigPublLineTextInMain}' ${file}`;
       await exec(sedCommand);
       await exec(`git add ${file}`);
     } else {
-      const lineNumberOfDateOriginallyPublished = dateOrigPublLineText.split(":")[0];
-      const sedCommand = `sed -i '' '${lineNumberOfDateOriginallyPublished}c\\\n${dateOrigPublLineTextInMain}' ${file}`;
+      console.log(`Modifying existing ${dateOriginallyPublished} in ${fileNameWithoutDirectory}...\n`);
+
+      const sedCommand = `sed -i '' '${dateOrigPublLineNumber}c\\\n${dateOrigPublLineTextInMain}' ${file}`;
       await exec(sedCommand);
       await exec(`git add ${file}`);
     }
   } catch (e) {
     // @ts-ignore
     if (e.code === 128) {
+      console.log(`${fileNameWithoutDirectory} not found in main branch\n`);
       if (dateOrigPublLineText.trim() === "") {
-        console.log(`${file} not found in main branch`);
-        console.log(`Adding a ${dateOriginallyPublished} to ${file}...`);
+        console.log(`Adding a ${dateOriginallyPublished} to ${fileNameWithoutDirectory}...\n`);
 
         const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
         await exec(sedCommand);
         await exec(`git add ${file}`);
       } else {
-        console.log(`${file} not found in main branch`);
-        console.log(`Modifying existing ${dateOriginallyPublished} in ${file}...`);
+        console.log(`Modifying existing ${dateOriginallyPublished} in ${fileNameWithoutDirectory}...\n`);
 
-        const lineNumberOfDateOriginallyPublished = dateOrigPublLineText.split(":")[0];
-
-        const sedCommand = `sed -i '' '${lineNumberOfDateOriginallyPublished}c\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
+        const sedCommand = `sed -i '' '${dateOrigPublLineNumber}c\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
         await exec(sedCommand);
         await exec(`git add ${file}`);
       }
     } else {
-      console.log("'git show' has failed!");
-      process.exit(1);
+      throw new Error("'git show' has failed!\n");
     }
   } finally {
     await exec(`rm -f ${tempFile}`);
