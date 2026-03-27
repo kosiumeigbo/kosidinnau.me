@@ -145,7 +145,7 @@ const writingPreCommitFunction = async function (file) {
 
     const sedCommand = `sed -i '' '${lineNumberOfDateModified}c\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
     await exec(sedCommand);
-    // await exec(`git add ${file}`);
+    await exec(`git add ${file}`);
   } catch (e) {
     console.log(e);
     const { stdout: stdout7 } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
@@ -157,7 +157,7 @@ const writingPreCommitFunction = async function (file) {
 
       const sedCommand = `sed -i '' '${updatedFrontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
       await exec(sedCommand);
-      // await exec(`git add ${file}`);
+      await exec(`git add ${file}`);
     } else {
       console.log("grep has failed!");
       process.exit(1);
