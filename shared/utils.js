@@ -47,6 +47,15 @@ const validateFrontMatterInFile = async function (file) {
     if (filteredProp.length === 0) {
       throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': No '${prop}' prop found\n`);
     }
+    const frontMatterLineForReqProp = filteredProp[0];
+
+    const [_, ...valueArr] = frontMatterLineForReqProp.split(":");
+    if (valueArr.length === 0) {
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
+    }
+    if (valueArr.length === 1 && valueArr[0].trim() === "") {
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
+    }
   });
 
   // Ensure the front matter of the file has all required props
@@ -57,18 +66,18 @@ const validateFrontMatterInFile = async function (file) {
     return [trimmedProp, value];
   });
 
-  parsedFrontMatterLines.forEach(([prop, val]) => {
-    // @ts-ignore
-    if (requiredPropKeys.includes(prop)) {
-      if (val.length === 0) {
-        throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
-      } else {
-        if (val.length === 1 && val[0].trim() === "") {
-          throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
-        }
-      }
-    }
-  });
+  // parsedFrontMatterLines.forEach(([prop, val]) => {
+  //   // @ts-ignore
+  //   if (requiredPropKeys.includes(prop)) {
+  //     if (val.length === 0) {
+  //       throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
+  //     } else {
+  //       if (val.length === 1 && val[0].trim() === "") {
+  //         throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
+  //       }
+  //     }
+  //   }
+  // });
 
   return parsedFrontMatterLines;
 };
