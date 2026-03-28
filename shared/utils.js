@@ -16,7 +16,7 @@ const getNewDateFormatted = function () {
  * @param {string} file
  * @returns {Promise<void>}
  */
-const writingPreCommitFunction = async function (file) {
+const validateWritingFile = async function (file) {
   const fileNameWithoutDirectory = file.split("/").pop();
   // @ts-ignore: This will always run for a file in the writings directory in the root
   const fileNameWithoutExtension = fileNameWithoutDirectory.split(".")[0];
@@ -159,5 +159,5 @@ const writingPreCommitFunction = async function (file) {
 
 module.exports = {
   getNewDateFormatted,
-  writingPreCommitFunction,
+  validateWritingFile,
 };
