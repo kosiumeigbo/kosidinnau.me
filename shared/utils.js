@@ -2,6 +2,7 @@
 const { promisify } = require("node:util");
 const child_process = require("node:child_process");
 const { requiredPropKeys, dateModified, dateOriginallyPublished } = require("./constants");
+const exec = promisify(child_process.exec);
 
 /** @return {string} */
 const getNewDateFormatted = function () {
@@ -14,15 +15,11 @@ const getNewDateFormatted = function () {
 
 /**
  * @param {string} file
- * @returns {Promise<void>}
+ * @returns {Promise<[string, string[]][]>}
  */
-const validateWritingFile = async function (file) {
+const validateFrontMatterInFile = async function (file) {
   const fileNameWithoutDirectory = file.split("/").pop();
-  // @ts-ignore: This will always run for a file in the writings directory in the root
-  const fileNameWithoutExtension = fileNameWithoutDirectory.split(".")[0];
-  const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
 
-  const exec = promisify(child_process.exec);
   const { stdout: firstLineInFile } = await exec(`sed -n 1p ${file}`);
   if (firstLineInFile.trim() !== "---") {
     throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': First line is not '---'\n`);
@@ -41,7 +38,8 @@ const validateWritingFile = async function (file) {
   const frontMatter = fullFrontMatterArray.map((str) => str.trim());
 
   // Check for duplicates of the required props.
-  // Also check that all required props are in the frontmatter
+  // Check that all required props are in the frontmatter
+  // Check that no empty front matter prop value for the required props
   requiredPropKeys.forEach((prop) => {
     const filteredProp = frontMatter.filter((str) => str.split(":")[0].trim() === prop);
     if (filteredProp.length > 1) {
@@ -49,6 +47,15 @@ const validateWritingFile = async function (file) {
     }
     if (filteredProp.length === 0) {
       throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': No '${prop}' prop found\n`);
+    }
+    const frontMatterLineForReqProp = filteredProp[0];
+
+    const [_, ...valueArr] = frontMatterLineForReqProp.split(":");
+    if (valueArr.length === 0) {
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
+    }
+    if (valueArr.length === 1 && valueArr[0].trim() === "") {
+      throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
     }
   });
 
@@ -60,18 +67,24 @@ const validateWritingFile = async function (file) {
     return [trimmedProp, value];
   });
 
-  parsedFrontMatterLines.forEach(([prop, val]) => {
-    // @ts-ignore
-    if (requiredPropKeys.includes(prop)) {
-      if (val.length === 0) {
-        throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
-      } else {
-        if (val.length === 1 && val[0].trim() === "") {
-          throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
-        }
-      }
-    }
-  });
+  return parsedFrontMatterLines;
+};
+
+/**
+ * @param {string} file
+ * @returns {Promise<void>}
+ */
+const validateWritingFile = async function (file) {
+  const fileNameWithoutDirectory = file.split("/").pop();
+  // @ts-ignore: This will always run for a file in the writings directory in the root
+  const fileNameWithoutExtension = fileNameWithoutDirectory.split(".")[0];
+  const tempFile = `temp-file-${fileNameWithoutExtension}.txt`;
+
+  await validateFrontMatterInFile(file);
+
+  const { stdout: currentFrontMatterEndLine } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
+
+  const currentFrontMatterEndLineNumber = Number(currentFrontMatterEndLine.trim().split(":")[0].trim());
 
   const { stdout: multiDateOrigPubl } = await exec(`grep -n '${dateOriginallyPublished}' ${file} | sed -n 2p`);
   if (multiDateOrigPubl.trim() !== "") {
@@ -91,7 +104,7 @@ const validateWritingFile = async function (file) {
     if (dateOrigPublLineText.trim() === "") {
       console.log(`Adding a ${dateOriginallyPublished} to ${fileNameWithoutDirectory}...\n`);
 
-      const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOrigPublLineTextInMain}' ${file}`;
+      const sedCommand = `sed -i '' '${currentFrontMatterEndLineNumber}i\\\n${dateOrigPublLineTextInMain}' ${file}`;
       await exec(sedCommand);
       await exec(`git add ${file}`);
     } else {
@@ -108,7 +121,7 @@ const validateWritingFile = async function (file) {
       if (dateOrigPublLineText.trim() === "") {
         console.log(`Adding a ${dateOriginallyPublished} to ${fileNameWithoutDirectory}...\n`);
 
-        const sedCommand = `sed -i '' '${frontMatterEndLineNumber}i\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
+        const sedCommand = `sed -i '' '${currentFrontMatterEndLineNumber}i\\\n${dateOriginallyPublished}: ${getNewDateFormatted()}\n' ${file}`;
         await exec(sedCommand);
         await exec(`git add ${file}`);
       } else {
@@ -132,32 +145,28 @@ const validateWritingFile = async function (file) {
     );
   }
   const { stdout: dateModifiedLineText } = await exec(`grep -n '${dateModified}' ${file} | sed -n 1p`);
-  const dateModifiedLineNumber = Number(dateModifiedLineText.trim().split(":")[0].trim());
   const { stdout: newFrontMatterEndLineText } = await exec(`grep -w -n -e '---' ${file} | sed -n 2p`);
   const newFrontMatterEndLineNumber = Number(newFrontMatterEndLineText.trim().split(":")[0].trim());
 
-  try {
+  if (dateModifiedLineText.trim() === "") {
+    console.log(`'${dateModified}' not found in ${fileNameWithoutDirectory}\n`);
+    console.log(`Adding a '${dateModified}' to ${fileNameWithoutDirectory}...\n`);
+
+    const sedCommand = `sed -i '' '${newFrontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
+    await exec(sedCommand);
+    await exec(`git add ${file}`);
+  } else {
+    const dateModifiedLineNumber = Number(dateModifiedLineText.trim().split(":")[0].trim());
     console.log(`Modifying existing ${dateModified} in ${fileNameWithoutDirectory}...\n`);
 
     const sedCommand = `sed -i '' '${dateModifiedLineNumber}c\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
     await exec(sedCommand);
     await exec(`git add ${file}`);
-  } catch (e) {
-    // @ts-ignore
-    if (e.code === 1) {
-      console.log(`'${dateModified}' not found in ${fileNameWithoutDirectory}\n`);
-      console.log(`Adding a '${dateModified}' to ${fileNameWithoutDirectory}...\n`);
-
-      const sedCommand = `sed -i '' '${newFrontMatterEndLineNumber}i\\\n${dateModified}: ${getNewDateFormatted()}\n' ${file}`;
-      await exec(sedCommand);
-      await exec(`git add ${file}`);
-    } else {
-      throw new Error("grep has failed!\n");
-    }
   }
 };
 
 module.exports = {
   getNewDateFormatted,
+  validateFrontMatterInFile,
   validateWritingFile,
 };

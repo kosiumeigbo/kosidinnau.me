@@ -1,9 +1,23 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { getSlugsForAllWritings, getValueFromFrontMatterKey } from "./helpers";
 import { FrontMatterObjectType } from "@/lib/types";
-import { allFrontMatterKeys, dateOriginallyPublished, dateModified, getNewDateFormatted } from "~/shared";
+import {
+  allFrontMatterKeys,
+  dateOriginallyPublished,
+  dateModified,
+  getNewDateFormatted,
+  validateFrontMatterInFile,
+} from "~/shared";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
+import child_process from "node:child_process";
+import { promisify } from "node:util";
+
+const exec = promisify(child_process.exec);
 
 export const getMetaDataForSingleFileInWritings = async function (slug: string) {
   const filePath = path.resolve(process.cwd(), "writings", `${slug}.html`);
@@ -38,26 +52,30 @@ export const getMetaDataForSingleFileInWritings = async function (slug: string) 
     .filter((str) => str.trim() !== "" && str.trim() !== "---")
     .map((str) => str.trim());
 
+  const parsedFrontMatterArray = await validateFrontMatterInFile(filePath);
+
   if (process.env.NODE_ENV === "development") {
-    const dateOriginallyPublishedFrontMatterLine = frontMatterArray.find(
-      (str) => str.split(":")[0].trim() === dateOriginallyPublished,
+    const dateOriginallyPublishedFrontMatterLine = parsedFrontMatterArray.find(
+      (val) => val[0].trim() === dateOriginallyPublished,
     );
 
     if (!dateOriginallyPublishedFrontMatterLine) {
-      frontMatterArray.push(`${dateOriginallyPublished}: ${getNewDateFormatted()}`);
+      parsedFrontMatterArray.push([dateOriginallyPublished, [getNewDateFormatted()]]);
     }
 
-    const dateModifiedFrontMatterLine = frontMatterArray.find((str) => str.split(":")[0].trim() === dateModified);
+    const dateModifiedFrontMatterLine = parsedFrontMatterArray.find((val) => val[0].trim() === dateModified);
 
     if (!dateModifiedFrontMatterLine) {
-      frontMatterArray.push(`${dateModified}: ${getNewDateFormatted()}`);
+      parsedFrontMatterArray.push([dateModified, [getNewDateFormatted()]]);
     }
   }
 
-  const htmlContent = lines.join("");
+  const { stdout: frontMatterEndLine } = await exec(`grep -w -n -e '---' ${filePath} | sed -n 2p`);
+  const frontMatterEndLineNumber = Number(frontMatterEndLine.trim().split(":")[0].trim());
+  const { stdout: htmlContent } = await exec(`sed -n '${(frontMatterEndLineNumber + 1).toString()},$p' ${filePath}`);
 
   const documentFrontMatterValuesObject = Object.fromEntries(
-    allFrontMatterKeys.map((propKey) => [propKey, getValueFromFrontMatterKey(frontMatterArray, slug, propKey)]),
+    allFrontMatterKeys.map((propKey) => [propKey, getValueFromFrontMatterKey(parsedFrontMatterArray, slug, propKey)]),
   ) as unknown as FrontMatterObjectType;
 
   const metaDataForFileInWritings = {
