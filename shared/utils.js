@@ -38,7 +38,8 @@ const validateFrontMatterInFile = async function (file) {
   const frontMatter = fullFrontMatterArray.map((str) => str.trim());
 
   // Check for duplicates of the required props.
-  // Also check that all required props are in the frontmatter
+  // Check that all required props are in the frontmatter
+  // Check that no empty front matter prop value for the required props
   requiredPropKeys.forEach((prop) => {
     const filteredProp = frontMatter.filter((str) => str.split(":")[0].trim() === prop);
     if (filteredProp.length > 1) {
@@ -65,19 +66,6 @@ const validateFrontMatterInFile = async function (file) {
     const trimmedProp = prop.trim();
     return [trimmedProp, value];
   });
-
-  // parsedFrontMatterLines.forEach(([prop, val]) => {
-  //   // @ts-ignore
-  //   if (requiredPropKeys.includes(prop)) {
-  //     if (val.length === 0) {
-  //       throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
-  //     } else {
-  //       if (val.length === 1 && val[0].trim() === "") {
-  //         throw new Error(`Invalid frontmatter found in '${fileNameWithoutDirectory}': Empty '${prop}' value found\n`);
-  //       }
-  //     }
-  //   }
-  // });
 
   return parsedFrontMatterLines;
 };
