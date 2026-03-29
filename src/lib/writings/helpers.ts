@@ -2,33 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import type { FrontMatterObjectKeysType } from "@/lib/types";
 
-const validatePropKeysFrontMatterValue = function (
-  frontMatterArray: string[],
+const getFrontMatterValueStringForPropKey = function (
+  parsedFrontMatterArray: [string, string[]][],
   slug: string,
   propKey: FrontMatterObjectKeysType,
 ) {
-  const filteredPropArray = frontMatterArray.filter((str) => str.split(":")[0].trim() === propKey);
-  if (filteredPropArray.length > 1) {
-    throw new Error(`Invalid Frontmatter: Multiple '${propKey}' props found in '${slug}.html'`);
-  }
-
-  if (filteredPropArray.length === 0) {
+  const tupleValueForPropKey = parsedFrontMatterArray.find((val) => val[0].trim() === propKey);
+  if (!tupleValueForPropKey) {
     throw new Error(`Invalid Frontmatter: No '${propKey}' prop found in '${slug}.html'`);
   }
-
-  const [_, ...propValues] = filteredPropArray[0].split(":");
-  if (propValues.length === 0) {
-    throw new Error(`Invalid Frontmatter: Empty '${propKey}' value found in '${slug}.html'`);
-  }
-
-  if (propValues.length === 1) {
-    if (propValues[0].trim().length === 0) {
-      throw new Error(`Invalid Frontmatter: Empty '${propKey}' value found in '${slug}.html'`);
-    }
-    return propValues[0].trim();
-  }
-
-  return propValues.join(":").trim();
+  return tupleValueForPropKey[1].join(":").trim();
 };
 
 export const getSlugsForAllWritings = function () {
@@ -38,21 +21,12 @@ export const getSlugsForAllWritings = function () {
   return slugs;
 };
 
-export const getPropKeyStringValueFromFrontMatter = function (
-  frontMatterArray: string[],
-  slug: string,
-  propKey: FrontMatterObjectKeysType,
-) {
-  const validStringValueForPropKey = validatePropKeysFrontMatterValue(frontMatterArray, slug, propKey);
-  return validStringValueForPropKey;
-};
-
 export const getValueFromFrontMatterKey = function (
-  frontMatterArray: string[],
+  parsedFrontMatterArray: [string, string[]][],
   slug: string,
   propKey: FrontMatterObjectKeysType,
 ) {
-  const validFrontMatterValueForPropKey = validatePropKeysFrontMatterValue(frontMatterArray, slug, propKey);
+  const validFrontMatterValueForPropKey = getFrontMatterValueStringForPropKey(parsedFrontMatterArray, slug, propKey);
 
   switch (propKey) {
     case "title":
