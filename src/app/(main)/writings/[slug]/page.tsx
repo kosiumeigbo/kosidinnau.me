@@ -35,7 +35,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!writingMetaData) return redirect("/writings");
 
   const { htmlContent, title, tags, dateOriginallyPublished, dateModified } = writingMetaData;
-  console.log(1);
 
   const dateOriginallyPublishedDateString = dateOriginallyPublished.toDateString();
   const dateModifiedDateString = dateModified.toDateString();
