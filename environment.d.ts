@@ -3,5 +3,7 @@ declare namespace NodeJS {
   interface ProcessEnv {
     readonly WS_SERVER_PORT: string;
     readonly HTTP_SERVER_PORT: string;
+    readonly BEARER_AUTH_TOKEN: string;
+    readonly API_URL: string;
   }
 }
