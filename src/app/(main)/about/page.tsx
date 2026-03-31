@@ -11,13 +11,10 @@ export default async function Page() {
 
   if (!res.ok) {
     const errorResponse = (await res.json()) as BadResponse;
-    console.log(errorResponse.errors);
     throw new Error(errorResponse.errors[0]);
   }
 
-  const data = (await res.json()) as GoodResponse<Book>;
-
-  console.log(data.success);
+  const { data, success } = (await res.json()) as GoodResponse<Book | null>;
 
   return (
     <Container>
