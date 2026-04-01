@@ -6,7 +6,7 @@ export default async function Page() {
   const res = await fetch(process.env.API_URL, {
     headers: { "Authorization": `Bearer ${process.env.BEARER_AUTH_TOKEN}`, "Content-Type": "application/json" },
     method: "GET",
-    next: { revalidate: 0 },
+    next: { revalidate: 3600 },
   });
 
   if (!res.ok) {
@@ -21,6 +21,7 @@ export default async function Page() {
       <h1 className="flex flex-col items-center justify-between text-center text-3xl font-normal">
         We&apos;re cooking something...
       </h1>
+      {data ? data.title : data}
     </Container>
   );
 }
