@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { getSlugsForAllWritings, getValueFromFrontMatterKey } from "./helpers";
 import { FrontMatterObjectType } from "@/lib/types";
 import {
@@ -46,11 +42,6 @@ export const getMetaDataForSingleFileInWritings = async function (slug: string) 
     }
     linesIndex++;
   }
-
-  const frontMatterArray = lines
-    .splice(0, linesIndex)
-    .filter((str) => str.trim() !== "" && str.trim() !== "---")
-    .map((str) => str.trim());
 
   const parsedFrontMatterArray = await validateFrontMatterInFile(filePath);
 
