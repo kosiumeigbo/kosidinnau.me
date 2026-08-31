@@ -11,20 +11,14 @@ export type FrontMatterObjectType = {
 export type FrontMatterObjectKeysType = (typeof allFrontMatterKeys)[number];
 
 export type Book = {
-  title: string;
-  author: string;
-  image: string;
-  description: string;
-  isbn13: string;
-  isbn10: string;
-  price: number;
-  priceUnit: string;
-  publisher: string;
-  categories?: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  rank?: number;
-  ageGroup?: string;
+  title: string | null;
+  author: string | null;
+  image: string | null;
+  description: string | null;
+  isbn13: string | null;
+  isbn10: string | null;
+  publisher: string | null;
+  categories: string[];
 };
 
 export type GoodResponse<T = NonNullable<unknown>> = {
