@@ -26,6 +26,7 @@ export default async function Page() {
   const res = await fetch(process.env.API_URL, {
     headers: { "Authorization": `Bearer ${process.env.BEARER_AUTH_TOKEN}`, "Content-Type": "application/json" },
     method: "GET",
+    next: { revalidate: 0 },
   });
 
   if (!res.ok) {
