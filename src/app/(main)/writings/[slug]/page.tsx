@@ -41,7 +41,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <div className="py-5">
-      <Container className="max-w-[45rem] text-sm">
+      <Container className="text-sm">
         <h1>{title}</h1>
         <div className="pb-2 text-right text-xs italic sm:text-sm">
           Originally published {dateOriginallyPublishedDateString}
