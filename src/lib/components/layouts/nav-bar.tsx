@@ -9,7 +9,7 @@ import Image from "next/image";
 import youngMe from "~/public/images/young-me.jpeg";
 
 const navLinkArr = [
-  { name: "About", path: "/about" },
+  { name: "Home", path: "/" },
   { name: "Writings", path: "/writings" },
 ] as const;
 
