@@ -21,12 +21,12 @@ export function NavBar({ className, ...props }: React.ComponentProps<"nav">): Re
   return (
     <nav className={cn("relative w-full border-b py-0.5", className)} {...props}>
       <Container>
-        <div className="relative flex w-full items-center justify-center gap-3 py-1 xs:gap-5">
+        <div className="relative flex w-full items-center justify-center gap-3 py-1 font-extralight xs:gap-5">
           {navLinkArr.map((routeObj, i) => {
             return (
               <Link
                 className={cn("border-b-2 border-transparent px-4 py-0 text-sm xs:text-base", {
-                  "border-red-800": routeObj.path === pathname,
+                  "border-red-800 font-bold": routeObj.path === pathname,
                 })}
                 key={i}
                 href={routeObj.path}

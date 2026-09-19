@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply font-merri;
-  }
-
   @font-face {
     font-family: "Merriweather";
     src: url("../../public/assets/fonts/Merriweather-Italic.ttf") format("opentype");
@@ -19,6 +15,9 @@
     src: url("../../public/assets/fonts/Merriweather-Regular.ttf") format("opentype");
     font-style: normal;
     font-display: swap;
+  }
+  * {
+    @apply font-merri;
   }
 
   h1 {
